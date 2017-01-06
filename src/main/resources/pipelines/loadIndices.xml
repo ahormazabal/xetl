@@ -11,28 +11,29 @@ El ultimo elemento debe ser un FinalStep.
 Todos los tags bajo el nivel 'step' seran convertidos a java properties, en forma de llave=valor.
 Por este motivo funciona definir tags de niveles mas bajos o con atributos.
 
-En los tags de nivel bajo 'step', se puede usar cualquier property del sistema o variable de entorno,
+En los tags bajo el nivel 'step', se puede usar cualquier property del sistema o variable de entorno,
 con la forma ${property.key}, la cual sera reemplazada por su valor, si es que la variable existe.
 
 -->
 <pipeline name="loadindices">
-
-  <datasource>riskbcs</datasource>
-
   <steps>
+
+    <!-- load records from csv-->
     <step type="loadcsv">
       <file>${csv_file}</file>
       <delimiter>;</delimiter>
     </step>
 
+    <!-- Convert decimals from , to . (postgres limitation) -->
     <step type="fixdecimals">
       <from>,</from>
       <to>.</to>
     </step>
 
+    <!-- Save to database -->
     <step type="savedb">
-      <dest_datasource>riskbcs</dest_datasource>
-      <dest_table>${TABLE_INDICES}</dest_table>
+      <!--<datasource>default</datasource>--> <!-- this is the default -->
+      <destination>${TABLE_INDICES}</destination>
     </step>
 
   </steps>

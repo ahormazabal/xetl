@@ -7,7 +7,7 @@ import java.util.Objects;
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
-public abstract class AbstractStep
+public abstract class AbstractBaseStep
     implements Step {
 
   protected Pipeline pipeline;

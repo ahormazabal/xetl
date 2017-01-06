@@ -5,7 +5,9 @@ import cl.bcs.risk.pipeline.Record;
 import java.util.*;
 
 /**
- * Registro mutable con conservacion del orden de columnas.
+ * Registro mutable que permite la modificacion de los campos del registro.
+ *
+ * No se permite agregar o eliminar columnas.
  *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
@@ -43,6 +45,12 @@ public class MutableOrderedRecord
     return fieldMap.get(keyList.get(i));
   }
 
+  /**
+   * Replaces the value at index i.
+   *
+   * @param i
+   * @param value
+   */
   public void set(int i, String value) {
     fieldMap.put(keyList.get(i), value);
     reindex();
@@ -53,7 +61,15 @@ public class MutableOrderedRecord
     return fieldMap.get(key);
   }
 
+  /**
+   * Replaces the value mapped at key.
+   *
+   * @param key
+   * @param value
+   */
   public void set(String key, String value) {
+    if(!fieldMap.containsKey(key))
+      throw new NoSuchElementException("key");
     fieldMap.put(key, value);
     reindex();
   }
@@ -80,6 +96,6 @@ public class MutableOrderedRecord
 
   @Override
   public Iterator<String> iterator() {
-    return fieldMap.values().iterator();
+    return values().iterator();
   }
 }

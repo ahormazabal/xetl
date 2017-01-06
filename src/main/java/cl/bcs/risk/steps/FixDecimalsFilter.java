@@ -1,6 +1,8 @@
 package cl.bcs.risk.steps;
 
 import cl.bcs.risk.pipeline.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -9,8 +11,10 @@ import java.util.stream.Stream;
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
-public class FixDecimalsFilter extends AbstractStep
+public class FixDecimalsFilter extends AbstractBaseStep
     implements FilterStep {
+
+  private static final Logger LOG = LoggerFactory.getLogger(FixDecimalsFilter.class);
 
   private String from;
   private String to;

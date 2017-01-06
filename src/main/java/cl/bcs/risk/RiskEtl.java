@@ -2,6 +2,8 @@ package cl.bcs.risk;
 
 import cl.bcs.risk.pipeline.Pipeline;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -9,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.LogManager;
 import java.util.stream.Collectors;
 
 /**
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
 public class RiskEtl {
+  private static final Logger LOG = LoggerFactory.getLogger(RiskEtl.class);
 
   private static final String PIPELINE_PATH = "/pipelines/";
 
@@ -27,15 +31,20 @@ public class RiskEtl {
 
   private final List<Pipeline> pipelines;
 
+  private final DataSourceManager dataSourceManager;
+
 
   public RiskEtl(Properties mainProperties, String[] runPipelines) {
     this.mainProperties = mainProperties;
+    this.dataSourceManager = new DataSourceManager(this);
     this.runPipelines = runPipelines;
 
+    // Load available pipelines.
     availablePipelines = new BufferedReader(new InputStreamReader(RiskEtl.class.getResourceAsStream(PIPELINE_PATH))).lines()
         .map(this::loadPipeline)
         .collect(Collectors.toMap(Pipeline::getName, pipeline -> pipeline));
 
+    // Get pipelines to run.
     pipelines = Arrays.stream(this.runPipelines)
         .map(s -> {
           Pipeline p = availablePipelines.get(s);
@@ -67,6 +76,10 @@ public class RiskEtl {
     return mainProperties;
   }
 
+  public DataSourceManager getDataSourceManager() {
+    return dataSourceManager;
+  }
+
   /**
    * Expands variables marked with ${key} to "value" from the values
    * present on mainProperties.
@@ -76,7 +89,6 @@ public class RiskEtl {
   public String expandProperties(String value) {
     int index = 0;
     while (index < value.length()) {
-
       int i = value.indexOf("${", index++);
       int e = value.indexOf("}", i);
       if (e > (i + 1) && i >= 0) {
@@ -98,6 +110,13 @@ public class RiskEtl {
 
 
   public static void main(String[] args) {
+    LOG.info("Initializing RiskETL");
+
+    if(args.length < 1) {
+      printHelp();
+      System.exit(1);
+    }
+
 
     Properties properties = new Properties();
 
@@ -110,7 +129,11 @@ public class RiskEtl {
     RiskEtl etl = new RiskEtl(properties, args);
     etl.runPipelines();
 
-    System.out.println("END");
+    LOG.info("Process finished successfully.");
+  }
+
+  private static void printHelp(){
+    System.out.printf("Usage:\n\tjava -jar etl.jar [-Dproperty=value ...] pipeline_name [pipeline_name ...]\n\n");
   }
 
 

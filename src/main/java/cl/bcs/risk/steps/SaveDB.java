@@ -1,12 +1,18 @@
 package cl.bcs.risk.steps;
 
-import cl.bcs.risk.pipeline.*;
+import cl.bcs.risk.pipeline.AbstractBaseStep;
+import cl.bcs.risk.pipeline.FinalStep;
+import cl.bcs.risk.pipeline.Pipeline;
+import cl.bcs.risk.pipeline.Record;
 import cl.bcs.risk.utils.CharacterStreamReader;
 import org.postgresql.copy.CopyManager;
+import org.postgresql.core.BaseConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.Reader;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -14,14 +20,15 @@ import java.util.stream.Stream;
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
-public class SaveDB extends AbstractStep
+public class SaveDB extends AbstractBaseStep
     implements FinalStep {
 
+  private static final Logger LOG = LoggerFactory.getLogger(SaveDB.class);
+
   private static String DELIM = ";";
+  private String dataSource;
 
-  private CopyManager copyManager;
-
-  private String destTable;
+  private String destination;
 
   @Override
   public String getType() {
@@ -32,33 +39,31 @@ public class SaveDB extends AbstractStep
   public void initialize(Pipeline pipeline, Map<String, String> properties) throws Exception {
     super.initialize(pipeline, properties);
 
-    destTable = getRequiredProperty("dest_table");
-
+    destination = getRequiredProperty("destination");
+    dataSource = getOptionalProperty("datasource", "default");
   }
 
   @Override
   public void finish(Stream<? extends Record> recordStream) {
-    System.out.println("FINISH HIM");
+    LOG.info("Writing stream to datasource: " + dataSource);
 
     Stream<Character> charStream = recordStream
         .map(this::recordToDbCSV)
         .flatMap(s -> s.chars().mapToObj(i -> (char) i));
 
-    String query = String.format("COPY %s FROM STDIN WITH(DELIMITER '%s', FORMAT CSV",
-        destTable, DELIM);
+    try (Connection dbConnection = getPipeline().getContext().getDataSourceManager().getConnection(dataSource);
+         Reader dataReader = new CharacterStreamReader(charStream)) {
 
-    try {
-
-      BufferedReader br = new BufferedReader(new CharacterStreamReader(charStream));
-
-      String weze;
-      while ((weze = br.readLine()) != null) {
-        System.out.println(weze);
+      if (!(dbConnection instanceof BaseConnection)) {
+        throw new SQLException("SaveDB Step only works with postgres datasources (for now...)");
       }
 
-//      copyManager.copyIn(query, new CharacterStreamReader(charStream));
+      String query = String.format("COPY %s FROM STDIN WITH(DELIMITER '%s', FORMAT CSV)", destination, DELIM);
+      CopyManager copyManager = new CopyManager((BaseConnection) dbConnection);
+      copyManager.copyIn(query, dataReader);
+      dataReader.close();
+      dbConnection.close();
 
-      br.close();
     } catch (Exception e) {
       throw new RuntimeException("Error writing data to database: " + e.getMessage(), e);
     }

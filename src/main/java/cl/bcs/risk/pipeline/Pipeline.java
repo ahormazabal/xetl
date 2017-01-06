@@ -2,6 +2,8 @@ package cl.bcs.risk.pipeline;
 
 import cl.bcs.risk.RiskEtl;
 import cl.bcs.risk.StepRegister;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -16,9 +18,9 @@ import java.util.stream.Stream;
  */
 public class Pipeline {
 
-  private String name;
+  private static final Logger LOG = LoggerFactory.getLogger(Pipeline.class);
 
-  private String datasource;
+  private String name;
 
   private List<Map<String, String>> stepProperties;
 
@@ -60,7 +62,8 @@ public class Pipeline {
 
 
   /**
-   * Validates the pipeline structure.
+   * Validates the pipeline structure, returning true if the pipeline is correct, or
+   * throwing an IllegalStateException if an error is encountered.
    *
    * @return
    */
@@ -109,7 +112,7 @@ public class Pipeline {
     executed = true;
     validate();
 
-    System.out.println("Running pipeline: " + name);
+    LOG.info("Running pipeline: " + name);
 
     // Exec Begin
     Iterator<Step> iter = pipelineSteps.iterator();
@@ -166,13 +169,6 @@ public class Pipeline {
     this.name = name;
   }
 
-  public void setDatasource(String datasource) {
-    this.datasource = datasource;
-  }
-
-  public String getDatasource() {
-    return datasource;
-  }
 
   public List<Map<String, String>> getSteps() {
     return stepProperties;
@@ -186,7 +182,6 @@ public class Pipeline {
   public String toString() {
     final StringBuilder sb = new StringBuilder("Pipeline{");
     sb.append("name='").append(name).append('\'');
-    sb.append(", datasource='").append(datasource).append('\'');
     sb.append(", steps={");
     stepProperties.forEach(step -> sb.append("[").append(step.toString()).append("]"));
     sb.append("}, pipelinesteps={");

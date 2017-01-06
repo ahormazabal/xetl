@@ -1,6 +1,6 @@
 package cl.bcs.risk.steps;
 
-import cl.bcs.risk.pipeline.AbstractStep;
+import cl.bcs.risk.pipeline.AbstractBaseStep;
 import cl.bcs.risk.pipeline.BeginStep;
 import cl.bcs.risk.pipeline.Pipeline;
 import cl.bcs.risk.pipeline.Record;
@@ -8,6 +8,8 @@ import cl.bcs.risk.utils.MutableOrderedRecord;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
@@ -18,8 +20,10 @@ import java.util.stream.StreamSupport;
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
-public class LoadCsv extends AbstractStep
+public class LoadCsv extends AbstractBaseStep
     implements BeginStep {
+
+  private static final Logger LOG = LoggerFactory.getLogger(LoadCsv.class);
 
   private static final int FILE_BUFFER_SIZE = 1024 * 1024 * 5; // 5MB
 
@@ -60,6 +64,8 @@ public class LoadCsv extends AbstractStep
 
   @Override
   public Stream<? extends Record> begin() {
+    LOG.info("Begin loading records from file: " + inputFile);
+
     // Create base stream from CSV file.
     return StreamSupport.stream(csvParser.spliterator(), false)
         .map(this::toRecord);
