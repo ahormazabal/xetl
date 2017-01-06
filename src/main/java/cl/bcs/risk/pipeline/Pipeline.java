@@ -58,52 +58,6 @@ public class Pipeline {
     validate();
   }
 
-  /**
-   * Executes the pipeline.
-   *
-   * @return
-   */
-  public void run() {
-    if (executed) {
-      throw new IllegalStateException("Already executed");
-    }
-    executed = true;
-    validate();
-
-    System.out.println("Running pipeline: " + name);
-
-    // Exec Begin
-    Iterator<Step> iter = pipelineSteps.iterator();
-    BeginStep beginStep = (BeginStep) iter.next();
-    Stream<? extends Record> pipelineStream = beginStep.begin();
-
-    do {
-      Step nextStep = iter.next();
-
-      if (iter.hasNext()) {
-        // Apply Filters
-        if (nextStep instanceof FilterStep) {
-          pipelineStream = ((FilterStep) nextStep).filter(pipelineStream);
-        } else {
-          throw new IllegalStateException("Illegal step reached. Not a filter: " + nextStep.toString());
-        }
-
-      } else {
-        // Exec Finish
-        if (nextStep instanceof FinalStep) {
-          ((FinalStep) nextStep).finish(pipelineStream);
-        } else {
-          throw new IllegalStateException("Illegal step reached. Not a filter: " + nextStep.toString());
-        }
-      }
-    }
-    while (iter.hasNext());
-
-    // Finish exec. Close stream
-    pipelineStream.close();
-
-  }
-
 
   /**
    * Validates the pipeline structure.
@@ -142,6 +96,59 @@ public class Pipeline {
     return true;
   }
 
+
+  /**
+   * Executes the pipeline.
+   *
+   * @return
+   */
+  public void run() {
+    if (executed) {
+      throw new IllegalStateException("Already executed");
+    }
+    executed = true;
+    validate();
+
+    System.out.println("Running pipeline: " + name);
+
+    // Exec Begin
+    Iterator<Step> iter = pipelineSteps.iterator();
+
+    Step nextStep = iter.next();
+    if (!(nextStep instanceof BeginStep)) {
+      throw new IllegalStateException("Illegal step reached. Not a begin step: " + nextStep.toString());
+    }
+    BeginStep beginStep = (BeginStep) nextStep;
+
+    // Run Begin Step
+    Stream<? extends Record> pipelineStream = beginStep.begin();
+
+    do {
+      nextStep = iter.next();
+
+      if (iter.hasNext()) {
+        // Apply Filters
+        if (nextStep instanceof FilterStep) {
+          pipelineStream = ((FilterStep) nextStep).filter(pipelineStream);
+        } else {
+          throw new IllegalStateException("Illegal step reached. Not a filter: " + nextStep.toString());
+        }
+
+
+      } else {
+        // Exec Finish
+        if (nextStep instanceof FinalStep) {
+          ((FinalStep) nextStep).finish(pipelineStream);
+        } else {
+          throw new IllegalStateException("Illegal step reached. Not a finalizer: " + nextStep.toString());
+        }
+      }
+    }
+    while (iter.hasNext());
+
+    // Close stream
+    pipelineStream.close();
+  }
 
   public void setContext(RiskEtl context) {
     this.context = context;

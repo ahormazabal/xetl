@@ -58,6 +58,7 @@ public class SaveDB extends AbstractStep
 
 //      copyManager.copyIn(query, new CharacterStreamReader(charStream));
 
+      br.close();
     } catch (Exception e) {
       throw new RuntimeException("Error writing data to database: " + e.getMessage(), e);
     }
