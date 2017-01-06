@@ -6,11 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.net.URL;
+import java.util.*;
 import java.util.logging.LogManager;
 import java.util.stream.Collectors;
 
@@ -27,27 +26,27 @@ public class RiskEtl {
 
   private final String[] runPipelines;
 
-  private final Map<String, Pipeline> availablePipelines;
+//  private final Map<String, Pipeline> availablePipelines;
 
   private final List<Pipeline> pipelines;
 
   private final DataSourceManager dataSourceManager;
 
 
-  public RiskEtl(Properties mainProperties, String[] runPipelines) {
+  public RiskEtl(Properties mainProperties, String[] runPipelines) throws IOException {
     this.mainProperties = mainProperties;
     this.dataSourceManager = new DataSourceManager(this);
     this.runPipelines = runPipelines;
 
     // Load available pipelines.
-    availablePipelines = new BufferedReader(new InputStreamReader(RiskEtl.class.getResourceAsStream(PIPELINE_PATH))).lines()
-        .map(this::loadPipeline)
-        .collect(Collectors.toMap(Pipeline::getName, pipeline -> pipeline));
+//    availablePipelines = new BufferedReader(new InputStreamReader(RiskEtl.class.getResourceAsStream(PIPELINE_PATH))).lines()
+//        .map(this::loadPipeline)
+//        .collect(Collectors.toMap(Pipeline::getName, pipeline -> pipeline));
 
     // Get pipelines to run.
     pipelines = Arrays.stream(this.runPipelines)
         .map(s -> {
-          Pipeline p = availablePipelines.get(s);
+          Pipeline p = loadPipeline(s);
           if (p == null) {
             throw new IllegalArgumentException("Invalid pipeline requested: " + s);
           }
@@ -58,8 +57,9 @@ public class RiskEtl {
   }
 
   private Pipeline loadPipeline(String filename) {
-    String path = PIPELINE_PATH + "/" + filename;
+    String path = PIPELINE_PATH + filename + ".xml";
     try {
+      LOG.info("Loading pipeline: " + path);
 
       XmlMapper xmlMapper = new XmlMapper();
       Pipeline p = xmlMapper.readValue(RiskEtl.class.getResourceAsStream(path), Pipeline.class);
@@ -109,7 +109,7 @@ public class RiskEtl {
 
 
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     LOG.info("Initializing RiskETL");
 
     if(args.length < 1) {
