@@ -51,7 +51,7 @@ public class FixDecimalsFilter extends AbstractBaseStep
     return recordStream
         .map(Record::mutable)
         .map(record -> {
-          record.entrySet().forEach(entry -> {
+          record.entries().forEach(entry -> {
             entry.setValue(performReplace(entry.getValue()));
           });
           return record;

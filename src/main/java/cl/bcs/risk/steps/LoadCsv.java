@@ -4,7 +4,7 @@ import cl.bcs.risk.pipeline.AbstractBaseStep;
 import cl.bcs.risk.pipeline.BeginStep;
 import cl.bcs.risk.pipeline.Pipeline;
 import cl.bcs.risk.pipeline.Record;
-import cl.bcs.risk.utils.MutableOrderedRecord;
+import cl.bcs.risk.utils.MutableRecord;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -72,11 +72,12 @@ public class LoadCsv extends AbstractBaseStep
   }
 
   private Record toRecord(CSVRecord record) {
-    Map<String, String> fieldMap = new LinkedHashMap<>();
+
+    MutableRecord r = new MutableRecord();
     csvParser.getHeaderMap().entrySet().forEach(entry -> {
-      fieldMap.put(entry.getKey(), record.get(entry.getValue()));
+      r.append(entry.getKey(), record.get(entry.getValue()));
     });
-    return new MutableOrderedRecord(fieldMap);
+    return r;
   }
 
 }

@@ -1,10 +1,9 @@
 package cl.bcs.risk.pipeline;
 
-import cl.bcs.risk.utils.MutableOrderedRecord;
+import cl.bcs.risk.utils.MutableRecord;
 
 import java.util.Collection;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * @author Alberto Hormazabal Cespedes
@@ -13,30 +12,30 @@ import java.util.Set;
 public interface Record
     extends Iterable<String> {
 
-  String get(int i);
+  int size();
+
+  String get(int index);
 
   String get(String key);
 
-  Set<String> keys();
+  Collection<Entry<String, String>> entries();
+
+  Collection<String> keys();
 
   Collection<String> values();
-
-  Set<Entry<String, String>> entrySet();
-
-  int numFields();
 
   /**
    * Crea una version mutable de este registro.
    * If the record is already mutable, the method will return the
    * same object.
    *
-   * @return a {@link MutableOrderedRecord} version of this record.
+   * @return a {@link MutableRecord} version of this record.
    */
-  static MutableOrderedRecord mutable(Record record) {
-    if (record instanceof MutableOrderedRecord) {
-      return (MutableOrderedRecord) record;
+  static MutableRecord mutable(Record record) {
+    if (record instanceof MutableRecord) {
+      return (MutableRecord) record;
     } else {
-      return new MutableOrderedRecord(record);
+      return new MutableRecord(record);
     }
   }
 
