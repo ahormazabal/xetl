@@ -15,26 +15,42 @@ En los tags bajo el nivel 'step', se puede usar cualquier property del sistema o
 con la forma ${property.key}, la cual sera reemplazada por su valor, si es que la variable existe.
 
 -->
-<pipeline name="loadindices">
+<pipeline name="extractOperations">
   <steps>
 
     <!-- load records from csv-->
-    <step type="loadcsv">
-      <file>${csv_file}</file>
-      <delimiter>;</delimiter>
-    </step>
-
-    <!-- Convert decimals from , to . (postgres limitation) -->
-    <step type="fixdecimals">
-      <from>,</from>
-      <to>.</to>
+    <step type="loaddb">
+      <origin>
+        SELECT
+          fecha,
+          camara,
+          participante,
+          cliente,
+          comitente,
+          fondo,
+          fecha_liquidacion,
+          estado,
+          instrumento,
+          moneda,
+          grupo,
+          familia,
+          monto_comprado,
+          monto_vendido,
+          cant_comprada,
+          cant_vendida,
+          lote_padron,
+          plazo,
+          riesgo,
+          emisor
+        FROM ${TABLE_OPERATIONS}
+        WHERE fecha = '${DATE}'
+      </origin>
     </step>
 
     <!-- Save to database -->
-    <step type="savedb">
-      <!--<datasource>default</datasource>--> <!-- this is the default -->
-      <destination>${TABLE_INDICES}</destination>
+    <step type="savecsv">
+      <destination>${OPERATIONS_FILE}</destination>
+      <delimiter>;</delimiter>
     </step>
-
   </steps>
 </pipeline>

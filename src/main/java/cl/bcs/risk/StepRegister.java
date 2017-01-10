@@ -2,9 +2,7 @@ package cl.bcs.risk;
 
 import cl.bcs.risk.pipeline.Pipeline;
 import cl.bcs.risk.pipeline.Step;
-import cl.bcs.risk.steps.FixDecimalsFilter;
-import cl.bcs.risk.steps.LoadCsv;
-import cl.bcs.risk.steps.SaveDB;
+import cl.bcs.risk.steps.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +19,14 @@ public final class StepRegister {
 
     // Register Begin Steps
     register.put("loadcsv", LoadCsv.class);
+    register.put("loaddb", LoadDB.class);
 
     // Register Fiters
     register.put("fixdecimals", FixDecimalsFilter.class);
 
     // Register Finalizers
     register.put("savedb", SaveDB.class);
+    register.put("savecsv", SaveCSV.class);
   }
 
 

@@ -18,6 +18,8 @@ public class DataSourceManager {
 
   private static Logger LOG = LoggerFactory.getLogger(DataSourceManager.class);
 
+  public static final String DEFAULT_DATASOURCE = "default";
+
   private final RiskEtl context;
 
   private final HashMap<String, Properties> dataSources;
@@ -42,7 +44,7 @@ public class DataSourceManager {
       dsProps.setProperty("user", dbUser);
       dsProps.setProperty("password", dbPwd);
 
-      dataSources.put("default", dsProps);
+      dataSources.put(DEFAULT_DATASOURCE, dsProps);
     }
 
     // FUTURE support for multiple datasources.

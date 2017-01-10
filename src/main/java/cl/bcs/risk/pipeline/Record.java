@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Map.Entry;
 
 /**
- * Registro que representa en proceso de una tupla en la operacion del ETL.
+ * Registro que representa una tupla en la operacion del ETL.
  *
  * Un pipeline procesa estos registros a medida que avanza para producir un resultado.
  *
@@ -22,7 +22,7 @@ public interface Record
   int size();
 
   /**
-   * Get the value at index index.
+   * Get the value at index.
    * @param index
    * @return
    */

@@ -16,7 +16,8 @@ import java.util.stream.Stream;
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
-public class Pipeline {
+public class Pipeline
+    implements Runnable {
 
   private static final Logger LOG = LoggerFactory.getLogger(Pipeline.class);
 
@@ -67,7 +68,7 @@ public class Pipeline {
    *
    * @return
    */
-  public boolean validate() {
+  private boolean validate() {
     Iterator<Step> iter = pipelineSteps.iterator();
 
     if (!iter.hasNext())

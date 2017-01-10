@@ -1,5 +1,6 @@
 package cl.bcs.risk.steps;
 
+import cl.bcs.risk.DataSourceManager;
 import cl.bcs.risk.pipeline.AbstractBaseStep;
 import cl.bcs.risk.pipeline.FinalStep;
 import cl.bcs.risk.pipeline.Pipeline;
@@ -40,7 +41,7 @@ public class SaveDB extends AbstractBaseStep
     super.initialize(pipeline, properties);
 
     destination = getRequiredProperty("destination");
-    dataSource = getOptionalProperty("datasource", "default");
+    dataSource = getOptionalProperty("datasource", DataSourceManager.DEFAULT_DATASOURCE);
     dateStyle = getOptionalProperty("datestyle", null);
   }
 

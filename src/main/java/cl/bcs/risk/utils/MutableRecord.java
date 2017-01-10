@@ -6,9 +6,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Registro mutable que permite modificar valores y agregar columnas.
+ * Registro (tupla) mutable que permite modificar valores y agregar columnas.
  *
- * Todos los iteradores de esta clase devuelven los valores en orden correcto.
+ * Todos los iteradores de esta clase devuelven los valores en el mismo orden.
  *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
@@ -20,11 +20,18 @@ public class MutableRecord
 
   private final Map<String, String> valuesMap;
 
+  /**
+   * Crea un nuevo registro vacio.
+   */
   public MutableRecord() {
     keyList = new ArrayList<>();
     valuesMap = new HashMap<>();
   }
 
+  /**
+   * Crea una copia mutable del registro entregado.
+   * @param record Registro a copiar.
+   */
   public MutableRecord(Record record) {
     keyList = new ArrayList<>(record.size());
     valuesMap = new HashMap<>(record.size());
@@ -47,16 +54,34 @@ public class MutableRecord
     return valuesMap.get(key);
   }
 
+  /**
+   * Sets the value at the specified index.
+   * @param index The index to replace
+   * @param value The new value
+   * @throws IndexOutOfBoundsException if index >= size()
+   */
   public void set(int index, String value) {
     valuesMap.put(keyList.get(index), value);
   }
 
+  /**
+   * Sets the value mapped at key.
+   * @param key Key to which replace its value.
+   * @param value The new value to replace.
+   * @throws NoSuchElementException if 'key' is not mapped in this record.
+   */
   public void set(String key, String value) {
     if (!valuesMap.containsKey(key))
       throw new NoSuchElementException(key);
     valuesMap.put(key, value);
   }
 
+  /**
+   * Appends a new field to the end of this record.
+   * @param key The new key to map.
+   * @param value The new value
+   * @throws  IllegalArgumentException if key is already mapped.
+   */
   public void append(String key, String value) {
     if (valuesMap.containsKey(key)) {
       throw new IllegalArgumentException("key already exists. use set()");
@@ -65,6 +90,13 @@ public class MutableRecord
     valuesMap.put(key, value);
   }
 
+  /**
+   * Inserts a new field into this record at position 'index'
+   * @param index The index at which to insert the value.
+   * @param key The new key to map
+   * @param value The initial value.
+   * @throws IllegalArgumentException If key is already mapped in this record.
+   */
   public void insert(int index, String key, String value) {
     if (valuesMap.containsKey(key)) {
       throw new IllegalArgumentException("key already exists. use set()");
@@ -98,7 +130,10 @@ public class MutableRecord
     return values().iterator();
   }
 
-
+  /**
+   * Our implementation Map.Entry so we can return entries with the same fashion
+   * as {@link Map}.
+   */
   public final class RecordEntry implements Map.Entry<String, String> {
     private String key;
 

@@ -15,7 +15,7 @@ En los tags bajo el nivel 'step', se puede usar cualquier property del sistema o
 con la forma ${property.key}, la cual sera reemplazada por su valor, si es que la variable existe.
 
 -->
-<pipeline name="loadinstruments">
+<pipeline name="loadInstruments">
   <steps>
 
     <!-- load records from csv-->
