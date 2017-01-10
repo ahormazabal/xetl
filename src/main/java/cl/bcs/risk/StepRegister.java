@@ -23,6 +23,7 @@ public final class StepRegister {
 
     // Register Fiters
     register.put("fixdecimals", FixDecimalsFilter.class);
+    register.put("operationsFilter", OperationsFilter.class);
 
     // Register Finalizers
     register.put("savedb", SaveDB.class);
