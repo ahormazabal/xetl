@@ -30,10 +30,15 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
       <to>.</to>
     </step>
 
-    <!-- Save to database -->
+    <step type="operationsLoader">
+      <filename>${O_FILENAME}</filename>
+    </step>
+
+     <!--Save to database-->
     <step type="savedb">
       <destination>${TABLE_OPERATIONS}</destination>
     </step>
+    <!--<step type="stdout"/>-->
 
   </steps>
 </pipeline>

@@ -19,28 +19,30 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * Filtro para realizar conversiones durante la extraccion de operaciones.
- * Por ejemplo cambio de nemo IIF.
+ * Este filtro procesa registros de operaciones y agrega registros adicionales cuando
+ * corresponde a un registro IF. Basicamente agrega un registro adicional con nemo DEP y otro
+ * con nemo SVS, siempre y cuando estos nemos nuevos esten presentes en los parametros de instrumento
+ * del dia de proceso.
  *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
-public class OperationsFilter extends AbstractBaseStep
+public class OperationsIFSymbolFilter extends AbstractBaseStep
     implements FilterStep {
 
-  private static final Logger LOG = LoggerFactory.getLogger(OperationsFilter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(OperationsIFSymbolFilter.class);
 
   // Config Parameters
   private String datasource;
   private String date;
 
 
-  // Work variables
+  // Work variable
   private Map<String, String> iifNemos;
 
   @Override
   public String getType() {
-    return "operationsFilter";
+    return "operationsIFSymbolFilter";
   }
 
 
@@ -56,7 +58,7 @@ public class OperationsFilter extends AbstractBaseStep
     QueryRunner qr = new QueryRunner();
 
 
-    // extract IIF NEMOS from instrument parameters.
+    // extract IIF NEMOS from to check instrument parameters.
     iifNemos = qr.query(sqlCnx,
         "SELECT DISTINCT nemo AS nemo FROM parametros WHERE fecha = cast(? AS DATE) AND mercado = 'IF'",
         rs -> {
@@ -68,10 +70,6 @@ public class OperationsFilter extends AbstractBaseStep
           return m;
         },
         date);
-
-
-    // extract Gs to discount
-
   }
 
   @Override

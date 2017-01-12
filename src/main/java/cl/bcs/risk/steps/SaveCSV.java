@@ -15,6 +15,7 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 /**
@@ -80,9 +81,10 @@ public class SaveCSV extends AbstractBaseStep
   }
 
   private String recordToCSV(Record record) {
-    return String.join(delimiter, record).concat("\n");
+    StringJoiner j = new StringJoiner(delimiter, "", "\n");
+    record.forEach(f -> j.add(f == null ? "" : f));
+    return j.toString();
   }
-
   private void writeHeader(Record r) {
     try {
       if (!headerWritten) {
