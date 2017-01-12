@@ -28,6 +28,7 @@ public final class StepRegister {
     // Register Finalizers
     register.put("savedb", SaveDB.class);
     register.put("savecsv", SaveCSV.class);
+    register.put("stdout", StdoutFinalStep.class);
   }
 
 

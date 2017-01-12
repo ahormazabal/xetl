@@ -29,7 +29,6 @@ public class SaveDB extends AbstractBaseStep
   private static String DELIM = ";";
   private String dataSource;
   private String destination;
-  private String dateStyle;
 
   @Override
   public String getType() {
@@ -42,12 +41,13 @@ public class SaveDB extends AbstractBaseStep
 
     destination = getRequiredProperty("destination");
     dataSource = getOptionalProperty("datasource", DataSourceManager.DEFAULT_DATASOURCE);
-    dateStyle = getOptionalProperty("datestyle", null);
   }
 
   @Override
   public void finish(Stream<? extends Record> recordStream) {
     LOG.info("Writing stream to datasource: " + dataSource);
+    String query = String.format("COPY %s FROM STDIN WITH(DELIMITER '%s', FORMAT CSV)", destination, DELIM);
+    LOG.info("Using query: " + query);
 
     Stream<Character> charStream = recordStream
         .map(this::recordToDbCSV)
@@ -60,11 +60,6 @@ public class SaveDB extends AbstractBaseStep
         throw new SQLException("SaveDB Step only works with postgres datasources (for now...)");
       }
 
-      String query = "";
-      if(dateStyle != null) {
-        query += String.format("SET datestyle = 'ISO, %s';", dateStyle);
-      }
-      query += String.format("COPY %s FROM STDIN WITH(DELIMITER '%s', FORMAT CSV)", destination, DELIM);
 
       CopyManager copyManager = new CopyManager((BaseConnection) dbConnection);
       copyManager.copyIn(query, dataReader);

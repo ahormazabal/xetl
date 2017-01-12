@@ -48,13 +48,14 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     </step>
 
     <step type="operationsFilter">
-
+      <date>${DATE}</date>
     </step>
 
-    <!-- Save to database -->
-    <step type="savecsv">
-      <destination>${OPERATIONS_FILE}</destination>
-      <delimiter>;</delimiter>
-    </step>
+    <!-- Save to file -->
+    <step type="stdout"/>
+    <!--<step type="savecsv">-->
+      <!--<destination>${OPERATIONS_FILE}</destination>-->
+      <!--<delimiter>;</delimiter>-->
+    <!--</step>-->
   </steps>
 </pipeline>
