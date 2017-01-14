@@ -75,7 +75,9 @@ public class LoadCsv extends AbstractBaseStep
 
     MutableRecord r = new MutableRecord();
     csvParser.getHeaderMap().entrySet().forEach(entry -> {
-      r.append(entry.getKey(), record.get(entry.getValue()));
+      String key = entry.getKey();
+      String val = record.get(entry.getValue());
+      r.append(entry.getKey(), val == null ? null : val.trim());
     });
     return r;
   }

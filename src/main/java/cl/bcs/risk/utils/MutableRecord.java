@@ -30,6 +30,7 @@ public class MutableRecord
 
   /**
    * Crea una copia mutable del registro entregado.
+   *
    * @param record Registro a copiar.
    */
   public MutableRecord(Record record) {
@@ -56,6 +57,7 @@ public class MutableRecord
 
   /**
    * Sets the value at the specified index.
+   *
    * @param index The index to replace
    * @param value The new value
    * @throws IndexOutOfBoundsException if index >= size()
@@ -66,6 +68,7 @@ public class MutableRecord
 
   /**
    * Sets the value mapped at key.
+   *
    * @param key Key to which replace its value.
    * @param value The new value to replace.
    * @throws NoSuchElementException if 'key' is not mapped in this record.
@@ -78,9 +81,10 @@ public class MutableRecord
 
   /**
    * Appends a new field to the end of this record.
+   *
    * @param key The new key to map.
    * @param value The new value
-   * @throws  IllegalArgumentException if key is already mapped.
+   * @throws IllegalArgumentException if key is already mapped.
    */
   public void append(String key, String value) {
     if (valuesMap.containsKey(key)) {
@@ -92,6 +96,7 @@ public class MutableRecord
 
   /**
    * Inserts a new field into this record at position 'index'
+   *
    * @param index The index at which to insert the value.
    * @param key The new key to map
    * @param value The initial value.
@@ -128,6 +133,16 @@ public class MutableRecord
   @Override
   public Iterator<String> iterator() {
     return values().iterator();
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("MutableRecord{");
+    entries().forEach(entry -> {
+      sb.append(entry.getKey()).append("=").append(entry.getValue()).append(", ");
+    });
+    sb.append('}');
+    return sb.toString();
   }
 
   /**

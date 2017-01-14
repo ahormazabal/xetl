@@ -6,16 +6,16 @@ import cl.bcs.risk.pipeline.FilterStep;
 import cl.bcs.risk.pipeline.Pipeline;
 import cl.bcs.risk.pipeline.Record;
 import cl.bcs.risk.utils.IIFSymbolUtils;
+import cl.bcs.risk.utils.IIFSymbolUtils.Issuer;
 import cl.bcs.risk.utils.MutableRecord;
 import org.apache.commons.dbutils.QueryRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -36,9 +36,13 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
   private String datasource;
   private String date;
 
+  // Work data
 
-  // Work variable
-  private Map<String, String> iifNemos;
+  /** Mapa de nemos IF presentes en los parametros de instrumento (RiskAmerica) */
+  private Map<String, String> ifNemos;
+
+  /** Mapa de emisores-codigo svs */
+  private Map<String, Issuer> issuers;
 
   @Override
   public String getType() {
@@ -58,8 +62,8 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
     QueryRunner qr = new QueryRunner();
 
 
-    // extract IIF NEMOS from to check instrument parameters.
-    iifNemos = qr.query(sqlCnx,
+    // extract IIF NEMOS to check instrument parameters.
+    ifNemos = qr.query(sqlCnx,
         "SELECT DISTINCT nemo AS nemo FROM parametros WHERE fecha = cast(? AS DATE) AND mercado = 'IF'",
         rs -> {
           Map<String, String> m = new HashMap<String, String>(20000);
@@ -70,6 +74,21 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
           return m;
         },
         date);
+
+    // Extract IIF Issuers
+    issuers = qr.query(sqlCnx,
+        "SELECT emisor, cod_svs, tip_ent FROM emisores WHERE ind_iif = 'S'",
+        rs -> {
+          Map<String, Issuer> m = new HashMap<>(500);
+          while (rs.next()) {
+            Issuer newIssuer = new Issuer();
+            newIssuer.emisor = rs.getString("emisor");
+            newIssuer.cod_svs = rs.getString("cod_svs");
+            newIssuer.tip_ent = rs.getString("tip_ent");
+            m.put(newIssuer.emisor, newIssuer);
+          }
+          return m;
+        });
   }
 
   @Override
@@ -87,12 +106,30 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
             List<String> newnemos = IIFSymbolUtils.genDEPSymbols(r);
 
             // Add record SVS nemo
+            Issuer issuer = issuers.get(r.get("emisor"));
+            if (issuer == null) {
+              String instrumento = r.get("instrumento");
+              switch (instrumento) {
+                case "PDBC":
+                case "PRBC":
+                  issuer = new Issuer();
+                  issuer.emisor = "CENTRAL";
+                  issuer.cod_svs = instrumento;
+                  issuer.tip_ent = "B";
+                  break;
+                default:
+                  throw new NullPointerException("Emisor nulo en registro: " + r.toString());
+              }
+            }
+
+
+            newnemos.add(IIFSymbolUtils.getSVSSymbol(r, issuer));
 
             // Start generation of new records.
             List<Record> newRecords = new ArrayList<Record>(10);
             newRecords.add(r);
             for (String newsym : newnemos) {
-              if (iifNemos.containsKey(newsym)) {
+              if (ifNemos.containsKey(newsym)) {
                 MutableRecord nr = new MutableRecord(r);
                 nr.set("instrumento", newsym);
                 newRecords.add(nr);
@@ -105,4 +142,5 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
           }
         });
   }
+
 }

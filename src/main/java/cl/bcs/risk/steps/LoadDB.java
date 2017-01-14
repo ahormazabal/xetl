@@ -93,7 +93,9 @@ public class LoadDB extends AbstractBaseStep
     int cols = meta.getColumnCount();
     MutableRecord record = new MutableRecord();
     for (int i = 1; i <= cols; i++) {
-      record.append(meta.getColumnLabel(i), rs.getString(i));
+      String label = meta.getColumnLabel(i);
+      String val = rs.getString(i);
+      record.append(label.trim(), val == null ? null : val.trim());
     }
     return record;
   }
