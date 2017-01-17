@@ -21,41 +21,22 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     <!-- load records from csv-->
     <step type="loaddb">
       <origin>
-        SELECT
-          fecha,
-          camara,
-          participante,
-          cliente,
-          comitente,
-          fondo,
-          fecha_liquidacion,
-          estado,
-          instrumento,
-          moneda,
-          grupo,
-          familia,
-          monto_comprado,
-          monto_vendido,
-          cant_comprada,
-          cant_vendida,
-          lote_padron,
-          plazo,
-          riesgo,
-          emisor
-        FROM ${TABLE_OPERATIONS}
+        SELECT *
+        FROM operaciones
         WHERE fecha = '${DATE}'
+        AND intradiario = '${INTRADAY_ID}'
       </origin>
     </step>
 
+    <!-- generar nemos IF -->
     <step type="operationsIFSymbolFilter">
       <date>${DATE}</date>
     </step>
 
     <!-- Save to file -->
-    <step type="stdout"/>
-    <!--<step type="savecsv">-->
-      <!--<destination>${OPERATIONS_FILE}</destination>-->
-      <!--<delimiter>;</delimiter>-->
-    <!--</step>-->
+    <step type="savecsv">
+      <destination>${OPERATIONS_FILE}</destination>
+      <delimiter>;</delimiter>
+    </step>
   </steps>
 </pipeline>

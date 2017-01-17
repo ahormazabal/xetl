@@ -21,22 +21,22 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     <!-- load records from csv-->
     <step type="loadcsv">
       <file>${csv_file}</file>
-      <delimiter>;</delimiter>
+      <delimiter>,</delimiter>
     </step>
 
-    <!-- Convert decimals from , to . (postgres limitation) -->
-    <step type="fixdecimals">
-      <from>,</from>
-      <to>.</to>
-    </step>
-
-    <step type="operationsLoader">
+    <step type="omgFile">
       <filename>${O_FILENAME}</filename>
+    </step>
+
+    <step type="dateformat">
+      <column>fecha liquidacion</column>
+      <from>dd/MM/yyyy</from>
+      <to>yyyy-MM-dd</to>
     </step>
 
      <!--Save to database-->
     <step type="savedb">
-      <destination>${TABLE_OPERATIONS}</destination>
+      <destination>operaciones</destination>
     </step>
     <!--<step type="stdout"/>-->
 

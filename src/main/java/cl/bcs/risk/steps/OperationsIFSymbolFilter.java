@@ -13,9 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -95,20 +96,22 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
   public Stream<? extends Record> filter(Stream<? extends Record> recordStream) {
     LOG.info("Applying operations filter");
     return recordStream
-//        .map(Record::mutable)
-        .flatMap(r -> {
-          if (!"IF".equals(r.get("grupo"))) {
-            return Stream.of(r);
+        .flatMap(record -> {
+
+          if (!"IF".equals(record.get("grupo"))) {
+            return Stream.of(record);
           }
 
           try {
             // Generate record DEP nemos
-            List<String> newnemos = IIFSymbolUtils.genDEPSymbols(r);
+            List<String> newnemos = IIFSymbolUtils.genDEPSymbols(record);
 
             // Add record SVS nemo
-            Issuer issuer = issuers.get(r.get("emisor"));
+            Issuer issuer = issuers.get(record.get("emisor"));
+
+            // Caso especial PDBC PRBC
             if (issuer == null) {
-              String instrumento = r.get("instrumento");
+              String instrumento = record.get("instrumento");
               switch (instrumento) {
                 case "PDBC":
                 case "PRBC":
@@ -117,20 +120,21 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
                   issuer.cod_svs = instrumento;
                   issuer.tip_ent = "B";
                   break;
-                default:
-                  throw new NullPointerException("Emisor nulo en registro: " + r.toString());
+//                default:
+//                  throw new NullPointerException("Emisor nulo en registro: " + r.toString());
               }
             }
 
-
-            newnemos.add(IIFSymbolUtils.getSVSSymbol(r, issuer));
+            if (issuer != null) {
+              newnemos.add(IIFSymbolUtils.getSVSSymbol(record, issuer));
+            }
 
             // Start generation of new records.
             List<Record> newRecords = new ArrayList<Record>(10);
-            newRecords.add(r);
+            newRecords.add(record);
             for (String newsym : newnemos) {
               if (ifNemos.containsKey(newsym)) {
-                MutableRecord nr = new MutableRecord(r);
+                MutableRecord nr = new MutableRecord(record);
                 nr.set("instrumento", newsym);
                 newRecords.add(nr);
               }

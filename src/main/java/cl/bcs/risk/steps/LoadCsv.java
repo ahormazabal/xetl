@@ -77,7 +77,7 @@ public class LoadCsv extends AbstractBaseStep
     csvParser.getHeaderMap().entrySet().forEach(entry -> {
       String key = entry.getKey();
       String val = record.get(entry.getValue());
-      r.append(entry.getKey(), val == null ? null : val.trim());
+      r.append(entry.getKey().toLowerCase().trim(), val == null ? null : val.trim());
     });
     return r;
   }

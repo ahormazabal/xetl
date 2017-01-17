@@ -87,7 +87,7 @@ public class Pipeline
       // Is final one ?
       if (iter.hasNext()) {
         if (!FilterStep.class.isAssignableFrom(nextStep.getClass())) {
-          throw new IllegalStateException(name + ": Invalid pipeline: No-Filter Step found at the middle.");
+          throw new IllegalStateException(name + ": Invalid pipeline: Step is not a filter: " + nextStep.getClass().getName());
         }
       } else {
         if (!FinalStep.class.isAssignableFrom(nextStep.getClass())) {

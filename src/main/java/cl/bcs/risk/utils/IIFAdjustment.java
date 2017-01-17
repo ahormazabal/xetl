@@ -2,6 +2,7 @@ package cl.bcs.risk.utils;
 
 import cl.bcs.risk.pipeline.Record;
 
+
 /**
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
@@ -73,6 +74,9 @@ public enum IIFAdjustment {
 
       case "EUR":
         return EUR_CLP;
+
+      case "IVP":
+        return IVP_CLP;
 
       default:
         return OTHER;

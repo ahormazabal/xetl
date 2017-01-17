@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
  *
  * Todos los iteradores de esta clase devuelven los valores en el mismo orden.
  *
+ *<b>Esta clase no es thread-safe.</b>
+ *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */

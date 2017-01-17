@@ -56,8 +56,8 @@ public interface Record
   /**
    * Crea una version mutable de este registro.
    *<p>
-   * If the record is already mutable, the method will return the
-   * same object.
+   * Si el registro ya es un {@link MutableRecord} el metodo devolvera el mismo objeto.
+   * En caso contrario se creara una nueva copia.
    *</p>
    * @see MutableRecord
    * @return a {@link MutableRecord} version of this record.

@@ -32,7 +32,7 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
 
     <!-- Save to database -->
     <step type="savedb">
-      <destination>${TABLE_INSTRUMENTS}</destination>
+      <destination>parametros</destination>
     </step>
 
   </steps>

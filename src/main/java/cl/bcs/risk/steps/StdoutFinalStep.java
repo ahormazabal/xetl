@@ -72,18 +72,14 @@ public class StdoutFinalStep extends AbstractBaseStep
   }
 
   private void writeHeader(Record r) {
-    try {
-      if (!header) {
-        if (dataWriter == null) {
-          throw new IOException("Data Writer not opened");
-        }
-        // write header
+    if (!header) {
+      try {
         String header = String.join(delimiter, r.keys()).concat("\n");
         dataWriter.write(header);
         this.header = true;
+      } catch (Exception e) {
+        throw new RuntimeException("Error generating header", e);
       }
-    } catch (Exception e) {
-      throw new RuntimeException("Error generating header", e);
     }
   }
 }

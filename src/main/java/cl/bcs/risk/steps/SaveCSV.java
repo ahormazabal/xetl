@@ -52,14 +52,19 @@ public class SaveCSV extends AbstractBaseStep
     delimiter = getOptionalProperty("delimiter", DEFAULT_DELIMITER);
 
     destFile = new File(destination);
-    if (!destFile.createNewFile()) {
-      throw new IOException("File already exists: " + destFile);
-    }
   }
 
   @Override
   public void finish(Stream<? extends Record> recordStream) {
     LOG.info("Writing stream to file: " + destFile);
+
+    try {
+      if (!destFile.createNewFile()) {
+        throw new RuntimeException("File already exists: " + destFile);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException("Error creating file: " + e.getMessage(), e);
+    }
 
     Stream<Character> charStream = recordStream
         .peek(this::writeHeader)
@@ -85,22 +90,17 @@ public class SaveCSV extends AbstractBaseStep
     record.forEach(f -> j.add(f == null ? "" : f));
     return j.toString();
   }
+
   private void writeHeader(Record r) {
-    try {
-      if (!headerWritten) {
-        if (dataWriter == null) {
-          throw new IOException("Data Writer not opened");
-        }
+    if (!headerWritten) {
+      try {
         // write header
         String header = String.join(delimiter, r.keys()).concat("\n");
         dataWriter.write(header);
         headerWritten = true;
+      } catch (Exception e) {
+        throw new RuntimeException("Error generating header", e);
       }
-//      else {
-//        // check valid header
-//      }
-    } catch (Exception e) {
-      throw new RuntimeException("Error generating header", e);
     }
   }
 }

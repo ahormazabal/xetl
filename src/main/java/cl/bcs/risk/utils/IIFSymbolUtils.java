@@ -138,8 +138,7 @@ public class IIFSymbolUtils {
     } else {
       return null;
     }
-    final String svsInstrument = issuerType + adjustment.getCode() + issuerStr + dueDate;
-    return svsInstrument;
+    return issuerType + adjustment.getCode() + issuerStr + dueDate;
   }
 
   /**

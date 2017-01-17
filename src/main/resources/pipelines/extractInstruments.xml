@@ -1,0 +1,37 @@
+<!--
+Archivo de definicion de un pileline.
+Este archivo define una linea de conversion de datos desde un origen a un destino
+
+Un "pipeline" define una serie de "steps" que transforman la data desde un input a un output.
+
+El primer elemento del pipeline debe ser un BeginStep.
+Los elementos centrales deben ser un FilterStep.
+El ultimo elemento debe ser un FinalStep.
+
+Todos los tags bajo el nivel 'step' seran convertidos a java properties, en forma de llave=valor.
+Por este motivo funciona definir tags de niveles mas bajos o con atributos.
+
+En los tags bajo el nivel 'step', se puede usar cualquier property del sistema o variable de entorno,
+con la forma ${property.key}, la cual sera reemplazada por su valor, si es que la variable existe.
+
+-->
+<pipeline name="extractInstruments">
+  <steps>
+
+    <!-- load records from csv-->
+    <step type="loaddb">
+      <origin>
+        SELECT *
+        FROM parametros
+        WHERE fecha = '${DATE}'
+        ORDER BY nemo ASC
+      </origin>
+    </step>
+
+    <!-- Save to file -->
+    <step type="savecsv">
+      <destination>${INSTRUMENTS_FILE}</destination>
+      <delimiter>;</delimiter>
+    </step>
+  </steps>
+</pipeline>
