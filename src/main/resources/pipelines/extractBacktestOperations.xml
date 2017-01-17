@@ -15,37 +15,34 @@ En los tags bajo el nivel 'step', se puede usar cualquier property del sistema o
 con la forma ${property.key}, la cual sera reemplazada por su valor, si es que la variable existe.
 
 -->
-<pipeline name="extractInstrumentsBacktest">
+<pipeline name="extractBacktestOperations">
   <steps>
 
     <!-- load records from csv-->
     <step type="loaddb">
       <origin>
-        SELECT
-          p.*,
-          m.spot_price AS m_spot_price
-        FROM parametros p
-          LEFT OUTER JOIN m_valorizacion_intradiario m
-            ON p.nemo = m.name
-               AND p.fecha = m.fecha
-               AND m.intradiario = '${INTRADAY_ID}'
-        WHERE p.fecha = '${DATE}'
-        ORDER BY nemo ASC
+        SELECT *
+        FROM operaciones
+        WHERE fecha = (SELECT f.fecha
+                       FROM factores f
+                       WHERE f.fecha &lt; '${DATE}'
+                       ORDER BY fecha DESC NULLS LAST
+                       LIMIT 1)
+              AND intradiario = '${INTRADAY_ID}'
       </origin>
     </step>
 
-    <!-- Replace valuations -->
-    <step type="mValuation"/>
-
-    <!-- Replace for 0 all columns starting from column 17 (16 0-indexed) to the right. -->
-    <step type="zeroToRight">
-      <fromColumn>16</fromColumn>
+    <!-- generar nemos IF -->
+    <step type="operationsIFSymbolFilter">
+      <date>${DATE}</date>
     </step>
+
+    <step type="removeOMG"/>
 
     <!-- Save to file -->
     <step type="savecsv">
-      <destination>${INSTRUMENTS_BACKTEST_FILE}</destination>
-      <delimiter>;</delimiter>
+      <destination>${OPERATIONS_BACKTEST_FILE}</destination>
+      <delimiter>,</delimiter>
     </step>
   </steps>
 </pipeline>

@@ -142,7 +142,7 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
 
             return newRecords.stream();
           } catch (Exception e) {
-            throw new RuntimeException("Error processing operations filter", e);
+            throw new RuntimeException("Error processing operations filter for record: " + record.toString(), e);
           }
         });
   }

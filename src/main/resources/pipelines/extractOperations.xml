@@ -33,10 +33,12 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
       <date>${DATE}</date>
     </step>
 
+    <step type="removeOMG" />
+
     <!-- Save to file -->
     <step type="savecsv">
       <destination>${OPERATIONS_FILE}</destination>
-      <delimiter>;</delimiter>
+      <delimiter>,</delimiter>
     </step>
   </steps>
 </pipeline>

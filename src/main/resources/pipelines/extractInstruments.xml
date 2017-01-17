@@ -19,14 +19,24 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
   <steps>
 
     <!-- load records from csv-->
+    <!-- cross with M file to get new values when available -->
     <step type="loaddb">
       <origin>
-        SELECT *
-        FROM parametros
-        WHERE fecha = '${DATE}'
+        SELECT
+          p.*,
+          m.spot_price AS m_spot_price
+        FROM parametros p
+          LEFT OUTER JOIN m_valorizacion_intradiario m
+            ON p.nemo = m.name
+               AND p.fecha = m.fecha
+               AND m.intradiario = '${INTRADAY_ID}'
+        WHERE p.fecha = '${DATE}'
         ORDER BY nemo ASC
       </origin>
     </step>
+
+    <!-- Replace valuations -->
+    <step type="mValuation"/>
 
     <!-- Save to file -->
     <step type="savecsv">

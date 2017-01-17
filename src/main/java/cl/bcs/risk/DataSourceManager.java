@@ -46,6 +46,9 @@ public class DataSourceManager {
 
       dataSources.put(DEFAULT_DATASOURCE, dsProps);
     }
+    else {
+      throw new IllegalStateException("No default datasource defined.");
+    }
 
     // FUTURE support for multiple datasources.
   }

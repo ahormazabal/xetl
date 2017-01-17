@@ -58,30 +58,18 @@ public class LoadDB extends AbstractBaseStep
 
       ResultSet rs = cnx.prepareStatement(origin).executeQuery();
 
-      Iterator<Record> rsIterator = new Iterator<Record>() {
-        @Override
-        public boolean hasNext() {
-          try {
-            return !rs.isLast();
-          } catch (SQLException e) {
-            throw new RuntimeException(e);
-          }
-        }
+      // Create resultset spliterator.
+      Spliterator<Record> resultSetSpliterator;
 
-        @Override
-        public Record next() {
-          try {
-            rs.next();
-            return toRecord(rs);
-          } catch (SQLException e) {
-            throw new RuntimeException(e);
-          }
-        }
-      };
-
-      return StreamSupport.stream(
-          Spliterators.spliteratorUnknownSize(rsIterator, Spliterator.ORDERED),
-          false);
+      if(!rs.isBeforeFirst()) {
+        // Empty Data
+        resultSetSpliterator = Spliterators.emptySpliterator();
+        LOG.warn("No data retrieved from database.");
+      }
+      else {
+        resultSetSpliterator = Spliterators.spliteratorUnknownSize(new RecordResultSetIterator(rs), Spliterator.ORDERED);
+      }
+      return StreamSupport.stream(resultSetSpliterator,false);
 
     } catch (Exception e) {
       throw new RuntimeException("Error reading data from database: " + e.getMessage(), e);
@@ -98,6 +86,37 @@ public class LoadDB extends AbstractBaseStep
       record.append(label.trim(), val == null ? null : val.trim());
     }
     return record;
+  }
+
+
+  private class RecordResultSetIterator
+  implements Iterator<Record> {
+
+    private final ResultSet rs;
+
+    public RecordResultSetIterator(ResultSet rs) {
+      this.rs = rs;
+    }
+
+    @Override
+    public boolean hasNext() {
+      try {
+        return !rs.isLast();
+      } catch (SQLException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public Record next() {
+      try {
+        rs.next();
+        return toRecord(rs);
+      } catch (SQLException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
   }
 
 }

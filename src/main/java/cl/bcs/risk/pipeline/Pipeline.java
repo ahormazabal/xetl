@@ -13,29 +13,49 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * Contenedor de un pipeline.
+ *
+ * Esta clase es intanciada por {@link RiskEtl} al parsear el xml.
+ *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
 public class Pipeline
     implements Runnable {
-
   private static final Logger LOG = LoggerFactory.getLogger(Pipeline.class);
 
+  /** Nombre del pipeline. */
   private String name;
 
+  /** Listado ordenado con las propiedades de todos los steps del pipeline. */
   private List<Map<String, String>> stepProperties;
 
-  private List<Step> pipelineSteps;
+  private transient List<Step> pipelineSteps;
+  private transient RiskEtl    context;
+  private transient volatile boolean executed = false;
 
-  private RiskEtl context;
-
-  private volatile boolean executed = false;
-
+  /**
+   * Construye un nuevo pipeline basico.
+   * <p>Para usar este pipeline primero se debe setear el valor de {@link #setName(String)}</p>
+   */
   public Pipeline() {
     this.pipelineSteps = new LinkedList<>();
   }
 
-  public void initialize() throws Exception {
+  public Pipeline(String name, List<Map<String, String>> stepProperties) {
+    this.name = name;
+    this.stepProperties = stepProperties;
+  }
+
+  /**
+   * Inicializa el pipeline a partir de la informacion en {@link #name} y {@link #stepProperties}.
+   *
+   * @throws Exception
+   */
+  public void initialize(RiskEtl context) throws Exception {
+
+    //Set execution context.
+    this.context = context;
 
     // Build steps.
     for (Map<String, String> sp : stepProperties) {
@@ -132,11 +152,11 @@ public class Pipeline
 
       if (iter.hasNext()) {
         // Apply Filters
-        if (nextStep instanceof FilterStep) {
-          pipelineStream = ((FilterStep) nextStep).filter(pipelineStream);
-        } else {
-          throw new IllegalStateException("Illegal step reached. Not a filter: " + nextStep.toString());
-        }
+//        if (nextStep instanceof FilterStep) {
+        pipelineStream = ((FilterStep) nextStep).filter(pipelineStream);
+//        } else {
+//          throw new IllegalStateException("Illegal step reached. Not a filter: " + nextStep.toString());
+//        }
 
 
       } else {
@@ -152,10 +172,6 @@ public class Pipeline
 
     // Close stream
     pipelineStream.close();
-  }
-
-  public void setContext(RiskEtl context) {
-    this.context = context;
   }
 
   public RiskEtl getContext() {

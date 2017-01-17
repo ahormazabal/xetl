@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  *
  * Todos los iteradores de esta clase devuelven los valores en el mismo orden.
  *
- *<b>Esta clase no es thread-safe.</b>
+ * <b>Esta clase no es thread-safe.</b>
  *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
@@ -112,6 +112,23 @@ public class MutableRecord
     valuesMap.put(key, value);
   }
 
+  public void remove(int index) {
+    valuesMap.remove(keyList.get(index));
+  }
+
+  public void remove(String key) {
+    if (!valuesMap.containsKey(key))
+      throw new NoSuchElementException(key);
+
+    keyList.remove(key);
+    valuesMap.remove(key);
+  }
+
+
+  @Override
+  public boolean containsKey(String key) {
+    return valuesMap.containsKey(key);
+  }
 
   @Override
   public Collection<Map.Entry<String, String>> entries() {

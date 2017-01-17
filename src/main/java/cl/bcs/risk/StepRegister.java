@@ -27,6 +27,9 @@ public final class StepRegister {
     register.put("operationsIFSymbolFilter", OperationsIFSymbolFilter.class);
     register.put("omgFile", OMGFilenameFilter.class);
     register.put("zeroToRight", ZeroToRightFilter.class);
+    register.put("mValuation", InstrumentMValuationFilter.class);
+    register.put("removeOMG", RemoveOMGFilter.class);
+
 
     // Register Finalizers
     register.put("savedb", SaveDB.class);

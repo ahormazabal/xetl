@@ -36,6 +36,13 @@ public interface Record
   String get(String key);
 
   /**
+   * Indica si el registro contiene un campo de nombre "key".
+   * @param key Llave a buscar
+   * @return true si llave existe, false en caso contrario.
+   */
+  boolean containsKey(String key);
+
+  /**
    * Gets an unmodifiable collection of all entries (key,value).
    * @return
    */

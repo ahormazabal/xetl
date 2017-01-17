@@ -1,6 +1,8 @@
 package cl.bcs.risk.utils;
 
 import cl.bcs.risk.pipeline.Record;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -17,6 +19,7 @@ import java.util.*;
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
 public class IIFSymbolUtils {
+  private static final Logger LOG = LoggerFactory.getLogger(IIFSymbolUtils.class);
 
   /** Formato Fecha SVS. */
   public static final DateFormat FORMAT_DATE_SVS = new SimpleDateFormat("ddMMyy");
@@ -80,6 +83,12 @@ public class IIFSymbolUtils {
     String riesgo = r.get("riesgo");
     String plazo = r.get("plazo");
     String fecha = r.get("fecha");
+
+    if(moneda == null || riesgo == null || plazo == null || fecha == null) {
+      LOG.warn("Skipping DEP symbol generation for IF record with incomplete data: " + r.toString());
+      return Collections.emptyList();
+    }
+
     Set<String> risks = getRiskClassifications(riesgo);
 
     List<String> symbols = new ArrayList<>(risks.size());

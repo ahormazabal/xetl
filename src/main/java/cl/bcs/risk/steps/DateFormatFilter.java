@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
+ * Filtro para cambio de formato de fecha.
+ *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */

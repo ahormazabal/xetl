@@ -13,6 +13,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
+ * Conversor para archivos O, M y G.
+ *
+ * Agrega dos columnas al principio del registro, fecha e intradiario, a partir del nombre de
+ * archivo entregado.
+ *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
@@ -21,12 +26,13 @@ public class OMGFilenameFilter extends AbstractBaseStep
 
   private static final Logger LOG = LoggerFactory.getLogger(OMGFilenameFilter.class);
 
-  private String filename;
+  public static final String DATE_FIELD = "fecha";
+  public static final String INTRADAY_FIELD = "intradiario";
 
+  private String filename;
 
   SimpleDateFormat sdfDateOut = new SimpleDateFormat("yyyy-MM-dd");
   SimpleDateFormat sdfDateIn  = new SimpleDateFormat("yyMMdd");
-
 
   @Override
   public String getType() {
@@ -36,7 +42,6 @@ public class OMGFilenameFilter extends AbstractBaseStep
   @Override
   public void initialize(Pipeline pipeline, Map<String, String> properties) throws Exception {
     super.initialize(pipeline, properties);
-
     filename = getRequiredProperty("filename");
   }
 
@@ -50,8 +55,8 @@ public class OMGFilenameFilter extends AbstractBaseStep
             // add fields from filename
             String intradayId = filename.substring(1, 2);
             String filedate = filename.substring(2, 8);
-            record.insert(0, "fecha", DateUtils.formatDate(filedate, sdfDateIn, sdfDateOut));
-            record.insert(1, "intradiario", intradayId);
+            record.insert(0, DATE_FIELD, DateUtils.formatDate(filedate, sdfDateIn, sdfDateOut));
+            record.insert(1, INTRADAY_FIELD, intradayId);
 
             return record;
           } catch (Exception e) {
@@ -59,7 +64,6 @@ public class OMGFilenameFilter extends AbstractBaseStep
           }
         });
   }
-
 
 
 }
