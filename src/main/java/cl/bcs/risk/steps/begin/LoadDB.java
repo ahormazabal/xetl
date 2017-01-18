@@ -1,4 +1,4 @@
-package cl.bcs.risk.steps;
+package cl.bcs.risk.steps.begin;
 
 import cl.bcs.risk.DataSourceManager;
 import cl.bcs.risk.pipeline.AbstractBaseStep;
@@ -6,16 +6,9 @@ import cl.bcs.risk.pipeline.BeginStep;
 import cl.bcs.risk.pipeline.Pipeline;
 import cl.bcs.risk.pipeline.Record;
 import cl.bcs.risk.utils.MutableRecord;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.dbutils.QueryRunner;
-import org.postgresql.copy.CopyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.transform.Result;
-import java.io.*;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;

@@ -1,19 +1,14 @@
-package cl.bcs.risk.steps;
+package cl.bcs.risk.steps.finale;
 
 import cl.bcs.risk.pipeline.AbstractBaseStep;
 import cl.bcs.risk.pipeline.FinalStep;
 import cl.bcs.risk.pipeline.Pipeline;
 import cl.bcs.risk.pipeline.Record;
 import cl.bcs.risk.utils.CharacterStreamReader;
-import cl.bcs.risk.utils.MutableRecord;
-import org.postgresql.copy.CopyManager;
-import org.postgresql.core.BaseConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
@@ -22,49 +17,34 @@ import java.util.stream.Stream;
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
-public class SaveCSV extends AbstractBaseStep
+public class StdoutFinalStep extends AbstractBaseStep
     implements FinalStep {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SaveCSV.class);
+  private static final Logger LOG = LoggerFactory.getLogger(StdoutFinalStep.class);
 
   private static String DEFAULT_DELIMITER = ";";
 
-  private String destination;
-
-  private File destFile;
-
   private String delimiter;
 
-  private volatile boolean headerWritten;
+  private volatile boolean header;
 
   private Writer dataWriter = null;
 
   @Override
   public String getType() {
-    return "savecsv";
+    return "stdout";
   }
 
   @Override
   public void initialize(Pipeline pipeline, Map<String, String> properties) throws Exception {
     super.initialize(pipeline, properties);
 
-    destination = getRequiredProperty("destination");
     delimiter = getOptionalProperty("delimiter", DEFAULT_DELIMITER);
-
-    destFile = new File(destination);
   }
 
   @Override
   public void finish(Stream<? extends Record> recordStream) {
-    LOG.info("Writing stream to file: " + destFile);
-
-    try {
-      if (!destFile.createNewFile()) {
-        throw new RuntimeException("File already exists: " + destFile);
-      }
-    } catch (Exception e) {
-      throw new RuntimeException("Error creating file: " + e.getMessage(), e);
-    }
+    LOG.info("Writing stream to stdout");
 
     Stream<Character> charStream = recordStream
         .peek(this::writeHeader)
@@ -72,7 +52,7 @@ public class SaveCSV extends AbstractBaseStep
         .flatMap(s -> s.chars().mapToObj(i -> (char) i));
 
 
-    try (Writer writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(destFile)));
+    try (Writer writer = new OutputStreamWriter(new BufferedOutputStream(System.out));
          Reader dataReader = new CharacterStreamReader(charStream)) {
       dataWriter = writer;
       char[] buffer = new char[4092];
@@ -81,7 +61,7 @@ public class SaveCSV extends AbstractBaseStep
         writer.write(buffer, 0, charRead);
       }
     } catch (Exception e) {
-      throw new RuntimeException(String.format("Error writing data to file %s: " + e.getMessage(), destination), e);
+      throw new RuntimeException("Error writing data to stdout: " + e.getMessage(), e);
     }
   }
 
@@ -92,12 +72,11 @@ public class SaveCSV extends AbstractBaseStep
   }
 
   private void writeHeader(Record r) {
-    if (!headerWritten) {
+    if (!header) {
       try {
-        // write header
         String header = String.join(delimiter, r.keys()).concat("\n");
         dataWriter.write(header);
-        headerWritten = true;
+        this.header = true;
       } catch (Exception e) {
         throw new RuntimeException("Error generating header", e);
       }

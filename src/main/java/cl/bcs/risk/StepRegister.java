@@ -2,7 +2,12 @@ package cl.bcs.risk;
 
 import cl.bcs.risk.pipeline.Pipeline;
 import cl.bcs.risk.pipeline.Step;
-import cl.bcs.risk.steps.*;
+import cl.bcs.risk.steps.begin.LoadCsv;
+import cl.bcs.risk.steps.begin.LoadDB;
+import cl.bcs.risk.steps.filters.*;
+import cl.bcs.risk.steps.finale.SaveCSV;
+import cl.bcs.risk.steps.finale.SaveDB;
+import cl.bcs.risk.steps.finale.StdoutFinalStep;
 
 import java.util.HashMap;
 import java.util.Map;

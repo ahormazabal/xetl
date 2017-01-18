@@ -1,4 +1,4 @@
-package cl.bcs.risk.steps;
+package cl.bcs.risk.steps.filters;
 
 import cl.bcs.risk.pipeline.AbstractBaseStep;
 import cl.bcs.risk.pipeline.FilterStep;
