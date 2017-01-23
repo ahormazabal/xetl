@@ -36,10 +36,9 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
 
     <step type="loaddb">
       <origin>
-        SELECT
-          *
+        SELECT *
         FROM parametros
-        WHERE p.fecha = '${DATE}'
+        WHERE fecha = '${DATE}'
         ORDER BY nemo ASC
       </origin>
     </step>
