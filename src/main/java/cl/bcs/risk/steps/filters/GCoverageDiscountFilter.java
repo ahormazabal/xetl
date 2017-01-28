@@ -80,7 +80,7 @@ public class GCoverageDiscountFilter extends AbstractBaseStep
 
   @Override
   public Stream<? extends Record> filter(Stream<? extends Record> recordStream) {
-    LOG.info("Applying operations filter");
+    LOG.info("Applying guarantee coverage discount filter");
     return recordStream
         .map(Record::mutable)
         .map(record -> {
@@ -113,6 +113,12 @@ public class GCoverageDiscountFilter extends AbstractBaseStep
                 record.set("monto_vendido", newSellAmnt.toPlainString());
                 recordCoverage.cantidad = newDiscount;
                 coverages.put(coverageKey, recordCoverage);
+                LOG.info(String.format(
+                    "%s: Replaced Qty: [%s] to [%s].",
+                    coverageKey,
+                    sellQty.toPlainString(),
+                    newSellQty.toPlainString()
+                ));
               }
             }
 
@@ -139,6 +145,7 @@ public class GCoverageDiscountFilter extends AbstractBaseStep
 
     /**
      * Obtiene la llave que representa la cuenta.
+     *
      * @return
      */
     public String getKey() {

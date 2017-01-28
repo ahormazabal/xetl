@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +143,7 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
   }
 
   private MutableRecord replaceRecordSymbol(MutableRecord record, String newSymbol) {
+    LOG.info("Switching Symbol <" + record.get("instrumento") + "> to <" + newSymbol + ">");
     record.set("instrumento", newSymbol);
     return record;
   }
