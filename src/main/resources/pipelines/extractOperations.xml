@@ -24,7 +24,14 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
         SELECT *
         FROM operaciones
         WHERE fecha = '${DATE}'
-        AND intradiario = '${INTRADAY_ID}'
+              AND intradiario = '${INTRADAY_ID}'
+        ORDER BY
+          camara,
+          participante,
+          cliente,
+          comitente,
+          fondo,
+          fecha_liquidacion ASC -- importante para el descuento de cobertura
       </origin>
     </step>
 
@@ -33,7 +40,14 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
       <date>${DATE}</date>
     </step>
 
-    <step type="removeOMG" />
+    <!-- Descuento cuenta cobertura -->
+    <step type="gCoverageDiscountFilter">
+      <date>${DATE}</date>
+      <intraday>${INTRADAY_ID}</intraday>
+    </step>
+
+    <!-- Remover columnas fecha e intradiario-->
+    <step type="removeOMG"/>
 
     <!-- Save to file -->
     <step type="savecsv">

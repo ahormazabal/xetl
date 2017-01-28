@@ -137,35 +137,19 @@ public class Pipeline
 
     // Exec Begin
     Iterator<Step> iter = pipelineSteps.iterator();
-
     Step nextStep = iter.next();
-    if (!(nextStep instanceof BeginStep)) {
-      throw new IllegalStateException("Illegal step reached. Not a begin step: " + nextStep.toString());
-    }
-    BeginStep beginStep = (BeginStep) nextStep;
 
     // Run Begin Step
-    Stream<? extends Record> pipelineStream = beginStep.begin();
+    Stream<? extends Record> pipelineStream = ((BeginStep) nextStep).begin();
 
     do {
       nextStep = iter.next();
-
       if (iter.hasNext()) {
-        // Apply Filters
-//        if (nextStep instanceof FilterStep) {
+        // Run filters
         pipelineStream = ((FilterStep) nextStep).filter(pipelineStream);
-//        } else {
-//          throw new IllegalStateException("Illegal step reached. Not a filter: " + nextStep.toString());
-//        }
-
-
       } else {
         // Exec Finish
-        if (nextStep instanceof FinalStep) {
-          ((FinalStep) nextStep).finish(pipelineStream);
-        } else {
-          throw new IllegalStateException("Illegal step reached. Not a finalizer: " + nextStep.toString());
-        }
+        ((FinalStep) nextStep).finish(pipelineStream);
       }
     }
     while (iter.hasNext());

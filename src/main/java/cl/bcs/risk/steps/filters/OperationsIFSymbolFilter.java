@@ -96,21 +96,19 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
   public Stream<? extends Record> filter(Stream<? extends Record> recordStream) {
     LOG.info("Applying operations filter");
     return recordStream
-        .flatMap(record -> {
+        .map(Record::mutable)
+        .map(record -> {
 
           if (!"IF".equals(record.get("grupo"))) {
-            return Stream.of(record);
+            return record;
           }
 
           try {
-            // Generate record DEP nemos
-            List<String> newnemos = IIFSymbolUtils.genDEPSymbols(record);
 
-            // Add record SVS nemo
+            // Generar Nemo SVS
+            String svsSymbol = null;
             Issuer issuer = issuers.get(record.get("emisor"));
-
-            // Caso especial PDBC PRBC
-            if (issuer == null) {
+            if (issuer == null) { // Caso especial PDBC PRBC
               String instrumento = record.get("instrumento");
               switch (instrumento) {
                 case "PDBC":
@@ -120,31 +118,34 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
                   issuer.cod_svs = instrumento;
                   issuer.tip_ent = "B";
                   break;
-//                default:
-//                  throw new NullPointerException("Emisor nulo en registro: " + r.toString());
               }
             }
 
             if (issuer != null) {
-              newnemos.add(IIFSymbolUtils.getSVSSymbol(record, issuer));
-            }
-
-            // Start generation of new records.
-            List<Record> newRecords = new ArrayList<Record>(10);
-            newRecords.add(record);
-            for (String newsym : newnemos) {
-              if (ifNemos.containsKey(newsym)) {
-                MutableRecord nr = new MutableRecord(record);
-                nr.set("instrumento", newsym);
-                newRecords.add(nr);
+              svsSymbol = IIFSymbolUtils.getSVSSymbol(record, issuer);
+              if (svsSymbol != null) {
+                return replaceRecordSymbol(record, svsSymbol);
               }
             }
 
-            return newRecords.stream();
+            // No svs, Generate record DEP nemos
+            List<String> depSymbols = IIFSymbolUtils.genDEPSymbols(record);
+            if (depSymbols != null && depSymbols.size() > 0) {
+              return replaceRecordSymbol(record, depSymbols.get(depSymbols.size() - 1));
+            }
+
+            // No match return original.
+            return record;
           } catch (Exception e) {
             throw new RuntimeException("Error processing operations filter for record: " + record.toString(), e);
           }
         });
+
+  }
+
+  private MutableRecord replaceRecordSymbol(MutableRecord record, String newSymbol) {
+    record.set("instrumento", newSymbol);
+    return record;
   }
 
 }

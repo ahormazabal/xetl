@@ -34,6 +34,7 @@ public final class StepRegister {
     register.put("zeroToRight", ZeroToRightFilter.class);
     register.put("mValuation", InstrumentMValuationFilter.class);
     register.put("removeOMG", RemoveOMGFilter.class);
+    register.put("gCoverageDiscountFilter", GCoverageDiscountFilter.class);
 
 
     // Register Finalizers
