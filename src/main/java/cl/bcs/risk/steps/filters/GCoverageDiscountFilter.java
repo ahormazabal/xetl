@@ -20,6 +20,14 @@ import java.util.stream.Stream;
 /**
  * Este filtro procesa registros de operaciones y descuenta la cantidad vendida
  * segun la cuenta de cobertura encontrada en la tabla de garantias.
+ * <p>
+ *   El descuento de cada cuenta se realizara en el orden en que los registros son procesados. Por ende
+ *   el orden en que el origen procesa los datos puede ser relevante.
+ * </p>
+ * <p>
+ *   Al 30-01-2017, este filtro se usa en el pipeline "extractOperations" y es importante
+ *   que el origen este ordenado por fecha de liquidacion de modo ascendente.
+ * </p>
  *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
