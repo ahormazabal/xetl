@@ -122,7 +122,7 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
 
             if (issuer != null) {
               svsSymbol = IIFSymbolUtils.getSVSSymbol(record, issuer);
-              if (svsSymbol != null) {
+              if (isValidSymbol(svsSymbol)) {
                 return replaceRecordSymbol(record, svsSymbol);
               }
             }
@@ -130,7 +130,17 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
             // No svs, Generate record DEP nemos
             List<String> depSymbols = IIFSymbolUtils.genDEPSymbols(record);
             if (depSymbols != null && depSymbols.size() > 0) {
-              return replaceRecordSymbol(record, depSymbols.get(depSymbols.size() - 1));
+
+              // Reverse look for the first valid one.
+              for (int i = (depSymbols.size() - 1); i >= 0; i--) {
+                if (isValidSymbol(depSymbols.get(i))) {
+                  return replaceRecordSymbol(record, depSymbols.get(i));
+                }
+              }
+            }
+
+            if (LOG.isDebugEnabled()) {
+              LOG.debug("No match for record: " + record.toString());
             }
 
             // No match return original.
@@ -143,9 +153,16 @@ public class OperationsIFSymbolFilter extends AbstractBaseStep
   }
 
   private MutableRecord replaceRecordSymbol(MutableRecord record, String newSymbol) {
-    LOG.info("Switching Symbol <" + record.get("instrumento") + "> to <" + newSymbol + ">");
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Switching Symbol <" + record.get("instrumento") + "> to <" + newSymbol + ">");
+    }
     record.set("instrumento", newSymbol);
     return record;
+  }
+
+
+  private boolean isValidSymbol(String symbol) {
+    return symbol != null && !symbol.isEmpty() && ifNemos.containsKey(symbol);
   }
 
 }
