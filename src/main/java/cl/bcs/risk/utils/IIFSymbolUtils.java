@@ -6,10 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
 
 /**
@@ -85,13 +81,7 @@ public class IIFSymbolUtils {
    * @return Lista con todos los nemos DEP generados.
    * @throws ParseException En caso de drama.
    */
-//  public static List<String> genDEPSymbols(Record r) throws ParseException {
   public static List<String> genDEPSymbols(String moneda, String riesgos, String fecha, String plazo) throws ParseException {
-
-//    String moneda = r.get("moneda");
-//    String riesgo = r.get("riesgo");
-//    String plazo = r.get("plazo");
-//    String fecha = r.get("fecha");
 
     if (moneda == null || riesgos == null || plazo == null || fecha == null) {
       LOG.warn(String.format(
@@ -133,10 +123,6 @@ public class IIFSymbolUtils {
    * @throws ParseException
    */
   public static final String getSVSSymbol(Issuer issuer, String moneda, String fecha, String plazo) throws ParseException {
-
-//    String plazo = record.get("plazo");
-//    String fecha = record.get("fecha");
-//    String currency = record.get("moneda");
 
     String issuerType = issuer.tip_ent;
     IIFAdjustment adjustment = IIFAdjustment.getAdjustment(moneda, issuer);
