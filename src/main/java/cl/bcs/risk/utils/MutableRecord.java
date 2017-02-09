@@ -175,7 +175,7 @@ public class MutableRecord
   }
 
   /**
-   * Our implementation Map.Entry so we can return entries with the same fashion
+   * Our implementation of Map.Entry so we can return entries with the same fashion
    * as {@link Map}.
    */
   public final class RecordEntry implements Map.Entry<String, String> {

@@ -58,9 +58,7 @@ public enum IIFAdjustment {
    * @param r Registro con instrumento. Debe tener un campo "moneda".
    * @return Tipo de reajuste IIF.
    */
-  public static IIFAdjustment getAdjustment(Record r, IIFSymbolUtils.Issuer i) {
-
-    String currency = r.get("moneda");
+  public static IIFAdjustment getAdjustment(String currency, IIFSymbolUtils.Issuer i) {
 
     switch (currency) {
       case "CLP":

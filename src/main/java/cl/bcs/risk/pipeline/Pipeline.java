@@ -15,7 +15,8 @@ import java.util.stream.Stream;
 /**
  * Contenedor de un pipeline.
  *
- * Esta clase es intanciada por {@link RiskEtl} al parsear el xml.
+ * Esta clase es intanciada por {@link RiskEtl}
+ * (via {@link com.fasterxml.jackson.dataformat.xml.XmlMapper}) al parsear el xml de definicion.
  *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)

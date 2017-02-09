@@ -1,12 +1,15 @@
 package cl.bcs.risk.utils;
 
-import cl.bcs.risk.pipeline.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 
 /**
@@ -26,6 +29,7 @@ public class IIFSymbolUtils {
 
   /** Formato fecha DEP */
   public static final DateFormat FORMAT_DATE_DEP = new SimpleDateFormat("yyyyMMdd");
+
 //  /**
 //   * Largo del Instrumento SVS.
 //   */
@@ -56,7 +60,7 @@ public class IIFSymbolUtils {
     return riskList;
   }
 
-  /**
+    /**
    * Add days to a yyyy-mm-dd date and convert into specified format.
    *
    * @param startdate
@@ -72,24 +76,36 @@ public class IIFSymbolUtils {
 
 
   /**
-   * Genera el nemo IF de tipo DEP a partir de un {@link Record}.
+   * Genera el nemo IF de tipo DEP.
    *
-   * @param r Record
-   * @return DEP nemo
+   * @param moneda Moneda del IF
+   * @param riesgos String con clasificaciones de riesgo del instrumento, separadas por ';'. EJ: "N1; N2"
+   * @param fecha Fecha a partir de la cual calcular el vencimiento.
+   * @param plazo Dias al vencimiento.
+   * @return Lista con todos los nemos DEP generados.
+   * @throws ParseException En caso de drama.
    */
-  public static List<String> genDEPSymbols(Record r) throws ParseException {
+//  public static List<String> genDEPSymbols(Record r) throws ParseException {
+  public static List<String> genDEPSymbols(String moneda, String riesgos, String fecha, String plazo) throws ParseException {
 
-    String moneda = r.get("moneda");
-    String riesgo = r.get("riesgo");
-    String plazo = r.get("plazo");
-    String fecha = r.get("fecha");
+//    String moneda = r.get("moneda");
+//    String riesgo = r.get("riesgo");
+//    String plazo = r.get("plazo");
+//    String fecha = r.get("fecha");
 
-    if(moneda == null || riesgo == null || plazo == null || fecha == null) {
-      LOG.warn("Skipping DEP symbol generation for IF record with incomplete data: " + r.toString());
+    if (moneda == null || riesgos == null || plazo == null || fecha == null) {
+      LOG.warn(String.format(
+          "Skipping DEP symbol generation for IF record with incomplete data: moneda<%s>, riesgos<%s>, fecha<%s>, plazo<%s>",
+          moneda, riesgos, fecha, plazo));
       return Collections.emptyList();
     }
 
-    Set<String> risks = getRiskClassifications(riesgo);
+
+    Collection<String> risks = getRiskClassifications(riesgos);
+    // Caso especial CLF
+    if ("CLF".equals(moneda))
+      risks.add("XX");
+
 
     List<String> symbols = new ArrayList<>(risks.size());
     for (String rk : risks) {
@@ -109,18 +125,21 @@ public class IIFSymbolUtils {
   /**
    * Obtiene el nemo svs del registro y emisor indicados.
    *
-   * @param record Registro compatible con archivo O
-   * @param issuer Emisor del instrumento.
-   * @return Nemo SVS.
-   * @throws ParseException En caso de drama.
+   * @param issuer
+   * @param moneda
+   * @param fecha
+   * @param plazo
+   * @return
+   * @throws ParseException
    */
-  public static final String getSVSSymbol(Record record, Issuer issuer) throws ParseException {
+  public static final String getSVSSymbol(Issuer issuer, String moneda, String fecha, String plazo) throws ParseException {
 
-    String plazo = record.get("plazo");
-    String fecha = record.get("fecha");
+//    String plazo = record.get("plazo");
+//    String fecha = record.get("fecha");
+//    String currency = record.get("moneda");
 
     String issuerType = issuer.tip_ent;
-    IIFAdjustment adjustment = IIFAdjustment.getAdjustment(record, issuer);
+    IIFAdjustment adjustment = IIFAdjustment.getAdjustment(moneda, issuer);
     String dueDate = dueDate(fecha, Integer.valueOf(plazo), FORMAT_DATE_SVS);
 
     String issuerSvsCode = issuer.cod_svs;

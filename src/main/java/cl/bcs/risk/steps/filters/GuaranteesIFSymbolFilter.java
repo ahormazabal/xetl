@@ -3,6 +3,7 @@ package cl.bcs.risk.steps.filters;
 import cl.bcs.risk.pipeline.FilterStep;
 import cl.bcs.risk.pipeline.Pipeline;
 import cl.bcs.risk.pipeline.Record;
+import cl.bcs.risk.utils.DateUtils;
 import cl.bcs.risk.utils.IIFSymbolUtils.Issuer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,23 +12,21 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * Este filtro procesa registros de operaciones y agrega registros adicionales cuando
- * corresponde a un registro IF. Basicamente agrega un registro adicional con nemo DEP y otro
- * con nemo SVS, siempre y cuando estos nemos nuevos esten presentes en los parametros de instrumento
- * del dia de proceso.
+ * Este filtro procesa registros de garantias y agrega registros adicionales cuando
+ * corresponde a un registro IF, reemplazando el nemo cuando corresponde.
  *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
-public class OperationsIFSymbolFilter extends AbstractIFSymbolFilter
+public class GuaranteesIFSymbolFilter extends AbstractIFSymbolFilter
     implements FilterStep {
 
-  private static final Logger LOG = LoggerFactory.getLogger(OperationsIFSymbolFilter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(GuaranteesIFSymbolFilter.class);
 
 
   @Override
   public String getType() {
-    return "operationsIFSymbolFilter";
+    return "guaranteesIFSymbolFilter";
   }
 
 
@@ -40,7 +39,7 @@ public class OperationsIFSymbolFilter extends AbstractIFSymbolFilter
 
   @Override
   public Stream<? extends Record> filter(Stream<? extends Record> recordStream) {
-    LOG.info("Applying operations filter");
+    LOG.info("Applying guarantees filter");
     return recordStream
         .map(Record::mutable)
         .map(record -> {
@@ -51,10 +50,14 @@ public class OperationsIFSymbolFilter extends AbstractIFSymbolFilter
 
           try {
             // Obtener Datos del registro.
-            String plazo = record.get("plazo");
             String fecha = record.get("fecha");
             String moneda = record.get("moneda");
             String riesgos = record.get("riesgo");
+
+            String fecha_de_vencimiento = record.get("fecha_de_vencimiento");
+            long days = DateUtils.daysBetween(fecha, fecha_de_vencimiento);
+            String plazo = String.valueOf(days);
+
             Issuer issuer = getIssuer(record);
 
             return performIFSymbolReplacement(record, issuer, moneda, riesgos, fecha, plazo);
@@ -62,6 +65,7 @@ public class OperationsIFSymbolFilter extends AbstractIFSymbolFilter
             throw new RuntimeException("Error processing operations filter for record: " + record.toString(), e);
           }
         });
+
   }
 
   /**
@@ -73,19 +77,20 @@ public class OperationsIFSymbolFilter extends AbstractIFSymbolFilter
   protected Issuer getIssuer(Record record) {
 
     Issuer issuer = getIssuers().get(record.get("emisor"));
-    if (issuer == null) { // Caso especial PDBC PRBC
+    if (issuer == null) {
       String instrumento = record.get("instrumento");
-      switch (instrumento) {
-        case "PDBC":
-        case "PRBC":
-          issuer = new Issuer();
-          issuer.emisor = "CENTRAL";
-          issuer.cod_svs = instrumento;
-          issuer.tip_ent = "B";
-          break;
+
+      if (instrumento.startsWith("PDBC") || instrumento.startsWith("PRBC")) {
+        issuer = new Issuer();
+        issuer.emisor = "CENTRAL";
+        issuer.cod_svs = instrumento.substring(0, 4);
+        issuer.tip_ent = "B";
+        return issuer;
+      } else {
+        String emcode = instrumento.substring(1, 4);
+        issuer = getIssuersBySvsCode().get(emcode);
       }
     }
-
     return issuer;
   }
 

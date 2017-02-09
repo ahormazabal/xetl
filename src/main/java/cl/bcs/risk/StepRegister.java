@@ -30,6 +30,7 @@ public final class StepRegister {
     register.put("fixdecimals", FixDecimalsFilter.class);
     register.put("dateformat", DateFormatFilter.class);
     register.put("operationsIFSymbolFilter", OperationsIFSymbolFilter.class);
+    register.put("guaranteesIFSymbolFilter", GuaranteesIFSymbolFilter.class);
     register.put("omgFile", OMGFilenameFilter.class);
     register.put("zeroToRight", ZeroToRightFilter.class);
     register.put("mValuation", InstrumentMValuationFilter.class);

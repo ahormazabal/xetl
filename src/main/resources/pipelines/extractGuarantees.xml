@@ -28,6 +28,10 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
       </origin>
     </step>
 
+    <step type="guaranteesIFSymbolFilter">
+      <date>${DATE}</date>
+    </step>
+
     <!-- Remover campos fecha e intradiario. -->
     <step type="removeOMG" />
 

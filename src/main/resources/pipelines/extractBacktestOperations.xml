@@ -29,12 +29,25 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
                        ORDER BY fecha DESC NULLS LAST
                        LIMIT 1)
               AND intradiario = '${INTRADAY_ID}'
+        ORDER BY
+          camara,
+          participante,
+          cliente,
+          comitente,
+          fondo,
+          fecha_liquidacion ASC -- importante para el descuento de cobertura
       </origin>
     </step>
 
     <!-- generar nemos IF -->
     <step type="operationsIFSymbolFilter">
       <date>${DATE}</date>
+    </step>
+
+    <!-- Descuento cuenta cobertura -->
+    <step type="gCoverageDiscountFilter">
+      <date>${DATE}</date>
+      <intraday>${INTRADAY_ID}</intraday>
     </step>
 
     <step type="removeOMG"/>
