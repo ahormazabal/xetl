@@ -28,6 +28,12 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
       <filename>${G_FILENAME}</filename>
     </step>
 
+    <step type="dateformat">
+      <column>fecha de vencimiento</column>
+      <from>dd-MM-yyyy</from>
+      <to>yyyy-MM-dd</to>
+    </step>
+
      <!--Save to database-->
     <step type="savedb">
       <destination>garantias</destination>
