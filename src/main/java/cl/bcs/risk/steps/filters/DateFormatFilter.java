@@ -60,7 +60,7 @@ public class DateFormatFilter extends AbstractBaseStep
           String value = record.get(column);
           try {
             record.set(column, performReplace(value));
-          } catch (ParseException e) {
+          } catch (Exception e) {
             throw new RuntimeException(String.format("Error parsing date <%s=%s> on record [%s] : %s",
                 column,
                 value,
