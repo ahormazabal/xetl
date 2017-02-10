@@ -58,6 +58,11 @@ public class DateFormatFilter extends AbstractBaseStep
         .map(Record::mutable)
         .map(record -> {
           String value = record.get(column);
+
+          if (value == null || value.isEmpty()) {
+            return record;
+          }
+
           try {
             record.set(column, performReplace(value));
           } catch (Exception e) {
