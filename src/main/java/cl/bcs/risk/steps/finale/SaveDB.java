@@ -25,8 +25,9 @@ public class SaveDB extends AbstractBaseStep
     implements FinalStep {
 
   private static final Logger LOG = LoggerFactory.getLogger(SaveDB.class);
+  private static final String DEFAULT_RECORD_DELIMITER = ";";
 
-  private static String DELIM = ";";
+  private String delimiter;
   private String dataSource;
   private String destination;
 
@@ -41,12 +42,13 @@ public class SaveDB extends AbstractBaseStep
 
     destination = getRequiredProperty("destination");
     dataSource = getOptionalProperty("datasource", DataSourceManager.DEFAULT_DATASOURCE);
+    delimiter = getOptionalProperty("delimiter", DEFAULT_RECORD_DELIMITER);
   }
 
   @Override
   public void finish(Stream<? extends Record> recordStream) {
     LOG.info("Writing stream to datasource: " + dataSource);
-    String query = String.format("COPY %s FROM STDIN WITH(DELIMITER '%s', FORMAT CSV)", destination, DELIM);
+    String query = String.format("COPY %s FROM STDIN WITH(DELIMITER '%s', FORMAT CSV)", destination, delimiter);
     LOG.info("Using query: " + query);
 
     Stream<Character> charStream = recordStream
@@ -72,6 +74,6 @@ public class SaveDB extends AbstractBaseStep
   }
 
   private String recordToDbCSV(Record record) {
-    return String.join(DELIM, record).concat("\n");
+    return String.join(delimiter, record).concat("\n");
   }
 }
