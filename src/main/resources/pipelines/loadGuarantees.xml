@@ -21,7 +21,7 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     <!-- load records from csv-->
     <step type="loadcsv">
       <file>${csv_file}</file>
-      <delimiter>;</delimiter>
+      <delimiter>,</delimiter>
     </step>
 
     <step type="omgFile">
@@ -30,7 +30,7 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
 
     <step type="dateformat">
       <column>fecha de vencimiento</column>
-      <from>dd-MM-yyyy</from>
+      <from>yyyy/MM/dd</from>
       <to>yyyy-MM-dd</to>
     </step>
 
