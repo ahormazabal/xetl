@@ -119,6 +119,7 @@ public class MutableRecord
    */
   public void remove(int index) {
     valuesMap.remove(keyList.get(index));
+    keyList.remove(index);
   }
 
   /**
