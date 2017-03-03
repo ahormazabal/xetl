@@ -1,0 +1,331 @@
+<!--
+Archivo de definicion de un pileline.
+Este archivo define una linea de conversion de datos desde un origen a un destino
+
+Un "pipeline" define una serie de "steps" que transforman la data desde un input a un output.
+
+El primer elemento del pipeline debe ser un BeginStep.
+Los elementos centrales deben ser un FilterStep.
+El ultimo elemento debe ser un FinalStep.
+
+Todos los tags bajo el nivel 'step' seran convertidos a java properties, en forma de llave=valor.
+Por este motivo funciona definir tags de niveles mas bajos o con atributos.
+
+En los tags bajo el nivel 'step', se puede usar cualquier property del sistema o variable de entorno,
+con la forma ${property.key}, la cual sera reemplazada por su valor, si es que la variable existe.
+
+-->
+<pipeline name="extractOperations">
+  <steps>
+
+    <!-- load records from csv-->
+    <step type="loaddb">
+      <origin>
+        ((SELECT
+            CASE WHEN (tipo_de_estimacion = 'MOVIL')
+              THEN 'PTFecha_Tn'
+            WHEN (tipo_de_estimacion = 'ESTATICO')
+              THEN 'PTFecha_Tn_T1'
+            ELSE 'OTHER' END AS tipo,
+
+            fecha            AS fecha_proceso,
+            NULL             AS correlativo,
+
+            CASE
+            WHEN (sistema ISNULL)
+              THEN 'PTFecha_Tn'
+            WHEN (sistema = 'CCS')
+              THEN 'PTNet'
+            WHEN (sistema = 'CHS')
+              THEN 'PTnoCP'
+            ELSE ''
+            END              AS arbol,
+            NULL             AS nivel,
+            cm,
+            pt,
+            1                AS fecha_proyeccion,
+            cl,
+            ct,
+            f,
+            t_1              AS riesgoT,
+            tt1              AS riesgoTT,
+            '--'             AS weze,
+            id_sesion,
+            tipo_de_escenario,
+            tipo_de_estimacion,
+            netting,
+            sistema,
+            scm,
+            t1,
+            t2,
+            t3
+          FROM estimacion_de_riesgo
+          WHERE id_sesion = '20170302_090000'
+                AND tipo_de_escenario = 'HISTORICO'
+                AND (
+                  (tipo_de_estimacion = 'ESTATICO' AND (t1 = 1 AND t2 = 1 AND t3 = 1))
+                  OR (tipo_de_estimacion = 'MOVIL' AND (scm != 'DE' OR scm IS NULL) AND t1 = 3 AND t2 = 4 AND t3 = 5)
+                  OR (tipo_de_estimacion = 'MOVIL' AND scm = 'DE' AND t1 = 9 AND t2 = 10 AND t3 = 11)
+                )
+                -- Niveles
+                AND (
+                  -- NIVEL CCLV
+                  (COALESCE(sistema, scm, cm, pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel Sistema
+                  OR (sistema IS NOT NULL AND COALESCE(scm, cm, pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel SCM (S-Camara)
+                  OR (scm IS NOT NULL AND COALESCE(cm, pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel CM (Camara)
+                  OR (cm IS NOT NULL AND COALESCE(pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel PT
+                  OR (cm IS NOT NULL AND pt IS NOT NULL AND COALESCE(cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CL
+                  OR (cm IS NOT NULL AND cl IS NOT NULL AND COALESCE(ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CT
+                  OR (cm NOTNULL AND pt NOTNULL AND cl NOTNULL AND ct NOTNULL AND netting = 'true')
+
+                  -- Nivel CCLV_PT
+                  OR (pt NOTNULL AND COALESCE(sistema, cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SISTEMA_PT
+                  OR (sistema NOTNULL AND pt NOTNULL AND COALESCE(scm, cm, cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SCM_PT
+                  OR (scm NOTNULL AND pt NOTNULL AND COALESCE(cm, cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CM_PT
+                  OR (cm NOTNULL AND pt NOTNULL AND COALESCE(cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CCLV_CL
+                  OR (cl NOTNULL AND COALESCE(sistema, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SISTEMA_CL
+                  OR (sistema NOTNULL AND cl NOTNULL AND COALESCE(scm, cm, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SCM-CL
+                  OR (scm NOTNULL AND cl NOTNULL AND COALESCE(cm, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CM-CL
+                  OR (cm NOTNULL AND cl NOTNULL AND COALESCE(ct, f) IS NULL AND netting = 'true')
+
+                )
+         )
+         UNION
+         (SELECT
+            CASE WHEN (tipo_de_estimacion = 'MOVIL')
+              THEN 'PTFecha_Tn'
+            WHEN (tipo_de_estimacion = 'ESTATICO')
+              THEN 'PTFecha_Tn_T1'
+            ELSE 'OTHER' END AS tipo,
+
+            fecha            AS fecha_proceso,
+            NULL             AS correlativo,
+
+            CASE
+            WHEN (sistema ISNULL)
+              THEN 'PTFecha_Tn'
+            WHEN (sistema = 'CCS')
+              THEN 'PTNet'
+            WHEN (sistema = 'CHS')
+              THEN 'PTnoCP'
+            ELSE ''
+            END              AS arbol,
+            NULL             AS nivel,
+            cm,
+            pt,
+            2                AS fecha_proyeccion,
+            cl,
+            ct,
+            f,
+            t_2              AS riesgoT,
+            tt2              AS riesgoTT,
+            '--'             AS weze,
+            id_sesion,
+            tipo_de_escenario,
+            tipo_de_estimacion,
+            netting,
+            sistema,
+            scm,
+            t1,
+            t2,
+            t3
+          FROM estimacion_de_riesgo
+          WHERE id_sesion = '20170302_090000'
+                AND tipo_de_escenario = 'HISTORICO'
+                AND (
+                  (tipo_de_estimacion = 'ESTATICO' AND (t1 = 1 AND t2 = 1 AND t3 = 1))
+                  OR (tipo_de_estimacion = 'MOVIL' AND (scm != 'DE' OR scm IS NULL) AND t1 = 3 AND t2 = 4 AND t3 = 5)
+                  OR (tipo_de_estimacion = 'MOVIL' AND scm = 'DE' AND t1 = 9 AND t2 = 10 AND t3 = 11)
+                )
+                -- Niveles
+                AND (
+                  -- NIVEL CCLV
+                  (COALESCE(sistema, scm, cm, pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel Sistema
+                  OR (sistema IS NOT NULL AND COALESCE(scm, cm, pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel SCM (S-Camara)
+                  OR (scm IS NOT NULL AND COALESCE(cm, pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel CM (Camara)
+                  OR (cm IS NOT NULL AND COALESCE(pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel PT
+                  OR (cm IS NOT NULL AND pt IS NOT NULL AND COALESCE(cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CL
+                  OR (cm IS NOT NULL AND cl IS NOT NULL AND COALESCE(ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CT
+                  OR (cm NOTNULL AND pt NOTNULL AND cl NOTNULL AND ct NOTNULL AND netting = 'true')
+
+                  -- Nivel CCLV_PT
+                  OR (pt NOTNULL AND COALESCE(sistema, cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SISTEMA_PT
+                  OR (sistema NOTNULL AND pt NOTNULL AND COALESCE(scm, cm, cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SCM_PT
+                  OR (scm NOTNULL AND pt NOTNULL AND COALESCE(cm, cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CM_PT
+                  OR (cm NOTNULL AND pt NOTNULL AND COALESCE(cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CCLV_CL
+                  OR (cl NOTNULL AND COALESCE(sistema, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SISTEMA_CL
+                  OR (sistema NOTNULL AND cl NOTNULL AND COALESCE(scm, cm, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SCM-CL
+                  OR (scm NOTNULL AND cl NOTNULL AND COALESCE(cm, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CM-CL
+                  OR (cm NOTNULL AND cl NOTNULL AND COALESCE(ct, f) IS NULL AND netting = 'true')
+
+                )
+         )
+         UNION
+         (SELECT
+            CASE WHEN (tipo_de_estimacion = 'MOVIL')
+              THEN 'PTFecha_Tn'
+            WHEN (tipo_de_estimacion = 'ESTATICO')
+              THEN 'PTFecha_Tn_T1'
+            ELSE 'OTHER' END AS tipo,
+
+            fecha            AS fecha_proceso,
+            NULL             AS correlativo,
+
+            CASE
+            WHEN (sistema ISNULL)
+              THEN 'PTFecha_Tn'
+            WHEN (sistema = 'CCS')
+              THEN 'PTNet'
+            WHEN (sistema = 'CHS')
+              THEN 'PTnoCP'
+            ELSE ''
+            END              AS arbol,
+            NULL             AS nivel,
+            cm,
+            pt,
+            3                AS fecha_proyeccion,
+            cl,
+            ct,
+            f,
+            t_3              AS riesgoT,
+            tt3              AS riesgoTT,
+            '--'             AS weze,
+            id_sesion,
+            tipo_de_escenario,
+            tipo_de_estimacion,
+            netting,
+            sistema,
+            scm,
+            t1,
+            t2,
+            t3
+          FROM estimacion_de_riesgo
+          WHERE id_sesion = '20170302_090000'
+                AND tipo_de_escenario = 'HISTORICO'
+                AND (
+                  (tipo_de_estimacion = 'ESTATICO' AND (t1 = 1 AND t2 = 1 AND t3 = 1))
+                  OR (tipo_de_estimacion = 'MOVIL' AND (scm != 'DE' OR scm IS NULL) AND t1 = 3 AND t2 = 4 AND t3 = 5)
+                  OR (tipo_de_estimacion = 'MOVIL' AND scm = 'DE' AND t1 = 9 AND t2 = 10 AND t3 = 11)
+                )
+                -- Niveles
+                AND (
+                  -- NIVEL CCLV
+                  (COALESCE(sistema, scm, cm, pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel Sistema
+                  OR (sistema IS NOT NULL AND COALESCE(scm, cm, pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel SCM (S-Camara)
+                  OR (scm IS NOT NULL AND COALESCE(cm, pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel CM (Camara)
+                  OR (cm IS NOT NULL AND COALESCE(pt, cl, ct, f) IS NULL AND netting = 'false')
+
+                  -- Nivel PT
+                  OR (cm IS NOT NULL AND pt IS NOT NULL AND COALESCE(cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CL
+                  OR (cm IS NOT NULL AND cl IS NOT NULL AND COALESCE(ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CT
+                  OR (cm NOTNULL AND pt NOTNULL AND cl NOTNULL AND ct NOTNULL AND netting = 'true')
+
+                  -- Nivel CCLV_PT
+                  OR (pt NOTNULL AND COALESCE(sistema, cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SISTEMA_PT
+                  OR (sistema NOTNULL AND pt NOTNULL AND COALESCE(scm, cm, cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SCM_PT
+                  OR (scm NOTNULL AND pt NOTNULL AND COALESCE(cm, cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CM_PT
+                  OR (cm NOTNULL AND pt NOTNULL AND COALESCE(cl, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CCLV_CL
+                  OR (cl NOTNULL AND COALESCE(sistema, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SISTEMA_CL
+                  OR (sistema NOTNULL AND cl NOTNULL AND COALESCE(scm, cm, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel SCM-CL
+                  OR (scm NOTNULL AND cl NOTNULL AND COALESCE(cm, ct, f) IS NULL AND netting = 'true')
+
+                  -- Nivel CM-CL
+                  OR (cm NOTNULL AND cl NOTNULL AND COALESCE(ct, f) IS NULL AND netting = 'true')
+
+                )
+         ))
+         ORDER BY
+           pt ASC NULLS FIRST,
+           cl ASC NULLS FIRST,
+           ct ASC NULLS FIRST,
+           f ASC NULLS FIRST,
+           cm ASC NULLS FIRST,
+           scm ASC NULLS FIRST,
+           sistema ASC NULLS FIRST,
+           tipo_de_estimacion ASC,
+           fecha_proyeccion ASC
+
+      </origin>
+    </step>
+
+    <!-- Save to file -->
+    <step type="savecsv">
+      <destination>${OPERATIONS_FILE}</destination>
+      <delimiter>;</delimiter>
+    </step>
+  </steps>
+</pipeline>

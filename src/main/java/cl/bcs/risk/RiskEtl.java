@@ -42,7 +42,6 @@ public class RiskEtl {
   public RiskEtl(Properties mainProperties, List<String> pipelines) throws IOException {
     this.mainProperties = mainProperties;
     this.dataSourceManager = new DataSourceManager(this);
-    ;
 
     // Load available pipelines.
 //    availablePipelines = new BufferedReader(new InputStreamReader(RiskEtl.class.getResourceAsStream(PIPELINE_PATH))).lines()
@@ -140,7 +139,6 @@ public class RiskEtl {
 
       // Process properties arguments.
       else if (s.startsWith("-D")) {
-        // TODO change to use the Properties parser.
         int keyidx = s.indexOf('=');
         if (keyidx < 1 || s.length() <= keyidx) {
           throw new IllegalArgumentException("Not a property: " + s);
