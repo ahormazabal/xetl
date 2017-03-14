@@ -104,13 +104,13 @@ Pipeline para archivo D
     </step>
 
     <!-- Save to file -->
-    <step type="stdout">
-      <delimiter>&#009;&#009;&#009;</delimiter>
-      <!--<delimiter>;</delimiter>-->
-    </step>
-    <!--<step type="savecsv">-->
-    <!--<destination>${OUTFILE}</destination>-->
-    <!--<delimiter>;</delimiter>-->
+    <!--<step type="stdout">-->
+      <!--<delimiter>&#009;&#009;&#009;</delimiter>-->
+      <!--&lt;!&ndash;<delimiter>;</delimiter>&ndash;&gt;-->
     <!--</step>-->
+    <step type="savecsv">
+      <destination>${OUTFILE}</destination>
+      <delimiter>;</delimiter>
+    </step>
   </steps>
 </pipeline>
