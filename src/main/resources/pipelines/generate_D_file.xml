@@ -1,27 +1,27 @@
 <!--
 Pipeline para archivo D
 -->
-<pipeline name="extractOperations">
+<pipeline name="generate_D_file">
   <steps>
 
     <!-- load records from csv-->
     <step type="loaddb">
       <origin>
         SELECT
-          cod_tipo         AS tipo,
-          fecha            AS fecha_proceso,
-          '${INTRADAY_ID}' AS correlativo,
-          cod_arbol        AS arbol,
-          cod_nivel        AS nivel,
+          get_cod_tipo(tipo_de_estimacion)               AS tipo,
+          fecha                                          AS fecha_proceso,
+          '${INTRADAY_ID}'                               AS correlativo,
+          get_cod_arbol(sistema)                         AS arbol,
+          get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
           cm,
           pt,
-          1                AS fecha_proyeccion,
+          fecha_proyeccion,
           cl,
           ct,
           f,
-          t_1              AS riesgoT,
-          tt1              AS riesgoTT,
-          '--'             AS weze,
+          riesgo_t                                       AS riesgoT,
+          riesgo_tt                                      AS riesgoTT,
+          '--'                                           AS fin_archivo,
           id_sesion,
           tipo_de_escenario,
           tipo_de_estimacion,
@@ -31,50 +31,86 @@ Pipeline para archivo D
           t1,
           t2,
           t3
-        FROM get_estimacion_de_riesgo('${SESSION_ID}') r
-        WHERE tipo_de_escenario = 'HISTORICO'
-              AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
-                   OR is_movil(tipo_de_estimacion, scm, t1, t2, t3))
-              -- Niveles
-              AND (
-                is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_ct(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-              )
+        FROM
+          (SELECT
+             *,
+             t_1 AS riesgo_t,
+             tt1 AS riesgo_tt,
+             1   AS fecha_proyeccion
+           FROM estimacion_de_riesgo
+           WHERE id_sesion = '${SESSION_ID}'
+                 AND tipo_de_escenario = 'HISTORICO'
+                 AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
+                      OR is_movil(tipo_de_estimacion, scm, t1, t2, t3))
+           UNION
+           SELECT
+             *,
+             t_2 AS riesgo_t,
+             tt2 AS riesgo_tt,
+             2   AS fecha_proyeccion
+           FROM estimacion_de_riesgo
+           WHERE id_sesion = '${SESSION_ID}'
+                 AND tipo_de_escenario = 'HISTORICO'
+                 AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
+                      OR is_movil(tipo_de_estimacion, scm, t1, t2, t3))
+           UNION
+           SELECT
+             *,
+             t_3 AS riesgo_t,
+             tt3 AS riesgo_tt,
+             3   AS fecha_proyeccion
+           FROM estimacion_de_riesgo
+           WHERE id_sesion = '${SESSION_ID}'
+                 AND tipo_de_escenario = 'HISTORICO'
+                 AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
+                      OR is_movil(tipo_de_estimacion, scm, t1, t2, t3))
+          ) AS data
+        --         Niveles
+        WHERE (
+          is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_cclv_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_sistema_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_scm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_cm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
+          OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
+        )
         ORDER BY
-          cod_nivel,
+          nivel ASC,
+          tipo_de_estimacion ASC,
+          fecha_proyeccion ASC,
+          sistema ASC NULLS FIRST,
+          scm ASC NULLS FIRST,
+          cm ASC NULLS FIRST,
           pt ASC NULLS FIRST,
           cl ASC NULLS FIRST,
           ct ASC NULLS FIRST,
-          f ASC NULLS FIRST,
-          cm ASC NULLS FIRST,
-          scm ASC NULLS FIRST,
-          sistema ASC NULLS FIRST,
-          tipo_de_estimacion ASC,
-          fecha_proyeccion ASC
+          f ASC NULLS FIRST
       </origin>
     </step>
 
     <!-- Save to file -->
     <step type="stdout">
-    <!--<delimiter>&#009;&#009;&#009;</delimiter>-->
-    <delimiter>;</delimiter>
+      <delimiter>&#009;&#009;&#009;</delimiter>
+      <!--<delimiter>;</delimiter>-->
     </step>
     <!--<step type="savecsv">-->
-      <!--<destination>${OUTFILE}</destination>-->
-      <!--<delimiter>;</delimiter>-->
+    <!--<destination>${OUTFILE}</destination>-->
+    <!--<delimiter>;</delimiter>-->
     <!--</step>-->
   </steps>
 </pipeline>
