@@ -54,6 +54,11 @@ public class SaveCSV extends AbstractBaseStep
     LOG.info("Writing stream to file: " + destFile);
 
     try {
+
+      if(destFile.exists()) {
+        destFile.delete();
+      }
+
       if (!destFile.createNewFile()) {
         throw new RuntimeException("File already exists: " + destFile);
       }
