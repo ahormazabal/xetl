@@ -90,7 +90,7 @@ Pipeline para archivo D
           OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
         )
         ORDER BY
-          nivel ASC,
+--           nivel ASC,
           tipo_de_estimacion ASC,
           fecha_proyeccion ASC,
           sistema ASC NULLS FIRST,

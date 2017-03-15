@@ -8,7 +8,7 @@ Pipeline para archivo D
     <step type="loaddb">
       <origin>
         SELECT
-          fecha                                          AS fecha_proceso,
+          fecha                                          AS fecha,
           get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
           cm,
           pt,

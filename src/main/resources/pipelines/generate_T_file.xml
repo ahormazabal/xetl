@@ -8,29 +8,33 @@ Pipeline para archivo D
     <step type="loaddb">
       <origin>
         SELECT
-          fecha                                          AS fecha_proceso,
+          (SELECT f.fecha
+           FROM factores f
+           WHERE f.fecha &lt; '${DATE}'
+           ORDER BY fecha DESC NULLS LAST
+           LIMIT 1)                                      AS fecha,
           '${INTRADAY_ID}'                               AS correlativo,
           get_cod_arbol(sistema)                         AS arbol,
           get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
-          cm,
-          pt,
-          't1',
-          cl,
-          ct,
-          f,
-          tt                                             AS riesgoT,
-          t_suma                                         AS riesgoTT,
+          edr.cm                                         AS cm,
+          edr.pt                                         AS pt,
+          edr.fecha                                      AS fecha_proyeccion,
+          edr.cl                                         AS cl,
+          edr.ct                                         AS ct,
+          edr.f                                          AS f,
+          edr.tt                                         AS riesgoT,
+          edr.t_suma                                     AS riesgoTT,
           '--'                                           AS fin_archivo,
-          id_sesion,
-          tipo_de_escenario,
-          tipo_de_estimacion,
-          netting,
-          sistema,
-          scm,
-          t1,
-          t2,
-          t3
-        FROM estimacion_de_riesgo
+          edr.id_sesion,
+          edr.tipo_de_escenario,
+          edr.tipo_de_estimacion,
+          edr.netting,
+          edr.sistema,
+          edr.scm,
+          edr.t1,
+          edr.t2,
+          edr.t3
+        FROM estimacion_de_riesgo edr
         WHERE id_sesion = '${SESSION_ID}'
               AND tipo_de_escenario = 'BACKTEST'
               AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1))
