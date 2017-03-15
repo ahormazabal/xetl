@@ -56,6 +56,7 @@ public class SaveCSV extends AbstractBaseStep
     try {
 
       if(destFile.exists()) {
+        LOG.warn("Replacing existing file: " + destFile.getCanonicalPath());
         destFile.delete();
       }
 
