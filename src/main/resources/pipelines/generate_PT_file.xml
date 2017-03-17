@@ -41,6 +41,8 @@ Pipeline para archivo D
                 OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
               )
         ORDER BY
           pt ASC NULLS FIRST,
