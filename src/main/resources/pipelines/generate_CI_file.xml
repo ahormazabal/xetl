@@ -34,13 +34,8 @@ Pipeline para archivo CI
       </origin>
     </step>
 
-    <!-- Save to file -->
-    <!--<step type="stdout">-->
-    <!--&lt;!&ndash;<delimiter>&#009;&#009;&#009;</delimiter>&ndash;&gt;-->
-    <!--<delimiter>;</delimiter>-->
-    <!--</step>-->
     <step type="savecsv">
-      <destination>${OUTFILE}</destination>
+      <destination>${OUTPUT_DIR}/CI${DATE_SHORT}.csv</destination>
       <delimiter>;</delimiter>
     </step>
   </steps>

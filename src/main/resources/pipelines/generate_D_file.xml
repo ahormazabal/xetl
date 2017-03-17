@@ -32,33 +32,33 @@ Pipeline para archivo D
           t2,
           t3
         FROM
-          (SELECT
+          (SELECT -- T-0
              *,
              t_1 AS riesgo_t,
              tt1 AS riesgo_tt,
-             1   AS fecha_proyeccion
+             get_fecha_liquidacion(fecha::DATE, 0) AS fecha_proyeccion
            FROM estimacion_de_riesgo
            WHERE id_sesion = '${SESSION_ID}'
                  AND tipo_de_escenario = 'HISTORICO'
                  AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
                       OR is_movil(tipo_de_estimacion, scm, t1, t2, t3))
            UNION
-           SELECT
+           SELECT -- T-1
              *,
              t_2 AS riesgo_t,
              tt2 AS riesgo_tt,
-             2   AS fecha_proyeccion
+             get_fecha_liquidacion(fecha::DATE, 1) AS fecha_proyeccion
            FROM estimacion_de_riesgo
            WHERE id_sesion = '${SESSION_ID}'
                  AND tipo_de_escenario = 'HISTORICO'
                  AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
                       OR is_movil(tipo_de_estimacion, scm, t1, t2, t3))
            UNION
-           SELECT
+           SELECT -- T-2
              *,
              t_3 AS riesgo_t,
              tt3 AS riesgo_tt,
-             3   AS fecha_proyeccion
+             get_fecha_liquidacion(fecha::DATE, 2) AS fecha_proyeccion
            FROM estimacion_de_riesgo
            WHERE id_sesion = '${SESSION_ID}'
                  AND tipo_de_escenario = 'HISTORICO'
@@ -103,13 +103,13 @@ Pipeline para archivo D
       </origin>
     </step>
 
-    <!-- Save to file -->
+     Save to file
     <!--<step type="stdout">-->
       <!--<delimiter>&#009;&#009;&#009;</delimiter>-->
-      <!--&lt;!&ndash;<delimiter>;</delimiter>&ndash;&gt;-->
+      <delimiter>;</delimiter>
     <!--</step>-->
     <step type="savecsv">
-      <destination>${OUTFILE}</destination>
+      <destination>${OUTPUT_DIR}/D${INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>;</delimiter>
     </step>
   </steps>
