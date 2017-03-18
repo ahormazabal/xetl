@@ -41,7 +41,7 @@ Pipeline para archivo D
            WHERE id_sesion = '${SESSION_ID}'
                  AND tipo_de_escenario = 'HISTORICO'
                  AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
-                      OR is_movil(tipo_de_estimacion, scm, t1, t2, t3))
+                      OR is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3))
            UNION
            SELECT -- T-1
              *,
@@ -52,7 +52,7 @@ Pipeline para archivo D
            WHERE id_sesion = '${SESSION_ID}'
                  AND tipo_de_escenario = 'HISTORICO'
                  AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
-                      OR is_movil(tipo_de_estimacion, scm, t1, t2, t3))
+                      OR is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3))
            UNION
            SELECT -- T-2
              *,
@@ -63,7 +63,7 @@ Pipeline para archivo D
            WHERE id_sesion = '${SESSION_ID}'
                  AND tipo_de_escenario = 'HISTORICO'
                  AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
-                      OR is_movil(tipo_de_estimacion, scm, t1, t2, t3))
+                      OR is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3))
           ) AS data
         --         Niveles
         WHERE (
@@ -106,11 +106,15 @@ Pipeline para archivo D
      Save to file
     <!--<step type="stdout">-->
       <!--<delimiter>&#009;&#009;&#009;</delimiter>-->
-      <delimiter>;</delimiter>
+      <!--<delimiter>;</delimiter>-->
     <!--</step>-->
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/D${INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>;</delimiter>
     </step>
+    <!--<step type="savecsv">-->
+      <!--<destination>${OUTPUT_DIR}/D${INTRADAY_ID}${DATE_SHORT}.csv</destination>-->
+      <!--<delimiter>;</delimiter>-->
+    <!--</step>-->
   </steps>
 </pipeline>

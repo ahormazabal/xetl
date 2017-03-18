@@ -98,18 +98,20 @@ public class RiskEtl {
   public String expandProperties(String value) {
     int index = 0;
     while (index < value.length()) {
-      int i = value.indexOf("${", index++);
+      int i = value.indexOf("${", index);
       int e = value.indexOf("}", i);
       if (e > (i + 1) && i >= 0) {
         String key = value.substring(i + 2, e);
         String replacement = mainProperties.getProperty(key);
         if (replacement != null) {
           value = value.replaceAll("\\$\\{" + key + "\\}", replacement);
-        }
-        else {
+        } else {
           LOG.warn(String.format("No value found on properties for expansion ${%s}", key));
         }
+      } else {
+        return value;
       }
+      index = i + 1;
     }
     return value;
   }

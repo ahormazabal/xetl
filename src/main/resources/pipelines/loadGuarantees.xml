@@ -27,6 +27,61 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     <step type="omgFile">
       <filename>${G_FILENAME}</filename>
     </step>
+    <wazil>(id, fac)</wazil>
+    <weze>
+      INSERT INTO usuarios
+      (id,
+      password,
+      nombre,
+      apellidos,
+      email,
+      telefono,
+      direccion,
+      nacionalidad,
+      genero,
+      fecha_nacimiento,
+      cambio_estado,
+      metadata)
+      VALUES (
+      :id,
+      :password,
+      :nombre,
+      :apellidos,
+      :email,
+      :telefono,
+      :direccion,
+      :nacionalidad,
+      :genero,
+      cast(:fecha_nacimiento AS DATE),
+      now(),
+      cast(:metadata AS JSONB)
+      )
+      ON CONFLICT (id)
+      DO UPDATE SET (
+      nombre,
+      apellidos,
+      email,
+      telefono,
+      direccion,
+      nacionalidad,
+      genero,
+      fecha_nacimiento,
+      cambio_estado,
+      metadata
+      ) = (
+      EXCLUDED.nombre,
+      EXCLUDED.apellidos,
+      EXCLUDED.email,
+      EXCLUDED.telefono,
+      EXCLUDED.direccion,
+      EXCLUDED.nacionalidad,
+      EXCLUDED.genero,
+      EXCLUDED.fecha_nacimiento,
+      EXCLUDED.cambio_estado,
+      EXCLUDED.metadata
+      )
+    </weze>
+
 
     <step type="dateformat">
       <column>fecha de vencimiento</column>
@@ -34,7 +89,7 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
       <to>yyyy-MM-dd</to>
     </step>
 
-     <!--Save to database-->
+    <!--Save to database-->
     <step type="savedb">
       <destination>garantias</destination>
       <delimiter>|</delimiter>
