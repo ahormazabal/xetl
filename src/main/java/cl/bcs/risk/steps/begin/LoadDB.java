@@ -49,6 +49,7 @@ public class LoadDB extends AbstractBaseStep
 
     try (Connection cnx = getPipeline().getContext().getDataSourceManager().getConnection(datasource)) {
 
+      // TODO probar otra implementacion usando CopyManager.
       ResultSet rs = cnx.prepareStatement(origin).executeQuery();
 
       // Create resultset spliterator.

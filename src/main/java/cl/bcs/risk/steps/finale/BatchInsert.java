@@ -42,8 +42,8 @@ public class BatchInsert extends AbstractBaseStep
 
   private Object[][] paramCache;
   private Object[][] delParamCache;
-  int paramCacheIndex;
-  int delParamCacheIndex;
+  private int paramCacheIndex;
+  private int delParamCacheIndex;
 
   @Override
   public String getType() {
@@ -55,7 +55,6 @@ public class BatchInsert extends AbstractBaseStep
     super.initialize(pipeline, properties);
     LOG.info("Initializing Postgres Batch Insert Step.");
 
-    boolean enableUpsert = Boolean.valueOf(getOptionalProperty("enable_upsert", "true"));
     destination = getRequiredProperty("destination");
     delete_by_columns = getOptionalProperty("delete_by_columns", null);
     dataSource = getOptionalProperty("datasource", DataSourceManager.DEFAULT_DATASOURCE);
@@ -106,7 +105,6 @@ public class BatchInsert extends AbstractBaseStep
       }
     }
     sb.append(")");
-
 
     insertQuery = sb.toString();
 
@@ -236,7 +234,7 @@ public class BatchInsert extends AbstractBaseStep
 
     if (batchParams.length > 0) {
       LOG.info("Flushing to db: " + batchParams.length + " records...");
-      queryRunner.insertBatch(sqlConnection, insertQuery, rs -> null, batchParams);
+      queryRunner.batch(sqlConnection, insertQuery, batchParams);
     }
   }
 
