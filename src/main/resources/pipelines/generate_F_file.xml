@@ -1,0 +1,63 @@
+<!--
+Pipeline para archivo D
+-->
+<pipeline name="generate_F_file">
+  <steps>
+
+    <!-- load records from csv-->
+    <step type="loaddb">
+      <origin>
+        SELECT
+          fecha            AS fecha,
+          '${INTRADAY_ID}' AS intradiario,
+          cm,
+          pt,
+          ct,
+          f,
+          val              AS valor,
+          '--'             AS fin_archivo,
+          id_sesion,
+          tipo_de_escenario,
+          sistema,
+          scm,
+          t,
+          cuenta
+        FROM estimacion_garantias
+        WHERE id_sesion = '${SESSION_ID}'
+              AND tipo_de_escenario = 'HISTORICO'
+              AND cuenta = 'CORRIENTE'
+              AND t = 3
+              -- Niveles
+--               AND (
+--                 is_nivel_cclv_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                 OR is_nivel_sistema_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                 OR is_nivel_scm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                 OR is_nivel_cm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                 OR is_nivel_cclv_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                 OR is_nivel_sistema_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                 OR is_nivel_scm_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                 OR is_nivel_cm_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                 OR is_nivel_ct1(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                 OR is_nivel_ct2(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--               )
+        ORDER BY
+          sistema ASC NULLS FIRST,
+          scm ASC NULLS FIRST,
+          cm ASC NULLS FIRST,
+          pt ASC NULLS FIRST,
+          ct ASC NULLS FIRST,
+          f ASC NULLS FIRST
+      </origin>
+    </step>
+
+    <!-- Save to file -->
+    <!--<step type="stdout">-->
+    <!--&lt;!&ndash;<delimiter>&#009;&#009;&#009;</delimiter>&ndash;&gt;-->
+    <!--<delimiter>;</delimiter>-->
+    <!--</step>-->
+    <step type="savecsv">
+      <destination>${OUTPUT_DIR}/F${INTRADAY_ID}${DATE_SHORT}.csv</destination>
+      <delimiter>;</delimiter>
+    </step>
+  </steps>
+</pipeline>
