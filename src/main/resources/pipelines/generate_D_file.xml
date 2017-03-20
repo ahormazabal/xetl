@@ -103,7 +103,7 @@ Pipeline para archivo D
       </origin>
     </step>
 
-     Save to file
+     <!--Save to file-->
     <!--<step type="stdout">-->
       <!--<delimiter>&#009;&#009;&#009;</delimiter>-->
       <!--<delimiter>;</delimiter>-->
