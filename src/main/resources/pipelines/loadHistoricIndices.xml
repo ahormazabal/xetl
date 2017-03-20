@@ -30,8 +30,10 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     </step>
 
     <!-- Save to database -->
-    <step type="savedb">
-      <!--<datasource>default</datasource>--> <!-- this is the default -->
+    <!--<step type="savedb">-->
+    <step type="batchinsert">
+    <!--<datasource>default</datasource>--> <!-- this is the default -->
+      <delete_by_columns>fecha</delete_by_columns>
       <destination>factores</destination>
     </step>
 

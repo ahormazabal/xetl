@@ -5,7 +5,7 @@ import cl.bcs.risk.pipeline.Step;
 import cl.bcs.risk.steps.begin.LoadCsv;
 import cl.bcs.risk.steps.begin.LoadDB;
 import cl.bcs.risk.steps.filters.*;
-import cl.bcs.risk.steps.finale.BatchUpsert;
+import cl.bcs.risk.steps.finale.BatchInsert;
 import cl.bcs.risk.steps.finale.SaveCSV;
 import cl.bcs.risk.steps.finale.SaveDB;
 import cl.bcs.risk.steps.finale.StdoutFinalStep;
@@ -43,7 +43,7 @@ public final class StepRegister {
     register.put("savedb", SaveDB.class);
     register.put("savecsv", SaveCSV.class);
     register.put("stdout", StdoutFinalStep.class);
-    register.put("batchupsert", BatchUpsert.class);
+    register.put("batchinsert", BatchInsert.class);
   }
 
 

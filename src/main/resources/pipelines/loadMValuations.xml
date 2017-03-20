@@ -29,7 +29,8 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     </step>
 
     <!-- Save to database -->
-    <step type="savedb">
+    <step type="batchinsert">
+      <delete_by_columns>fecha, intradiario</delete_by_columns>
       <destination>m_valorizacion_intradiario</destination>
     </step>
 

@@ -39,7 +39,11 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
 -->
 
     <!-- Save to database -->
-    <step type="savedb">
+    <!--<step type="savedb">-->
+      <!--<destination>factores</destination>-->
+    <!--</step>-->
+    <step type="batchinsert">
+      <delete_by_columns>fecha</delete_by_columns>
       <destination>factores</destination>
     </step>
 
