@@ -147,6 +147,8 @@ Pipeline para archivo D
             OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
             OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
           )
+          AND ((riesgo_t NOTNULL AND riesgo_t IS DISTINCT FROM 0)
+               OR (riesgo_tt NOTNULL AND riesgo_tt IS DISTINCT FROM 0))
         ORDER BY
           nivel ASC,
           tipo_de_estimacion ASC,
