@@ -23,17 +23,7 @@ Pipeline para archivo D
           edr.ct                                         AS ct,
           edr.f                                          AS f,
           edr.tt                                         AS riesgoT,
-          edr.t_suma                                     AS riesgoTT,
-          '--'                                           AS fin_archivo,
-          edr.id_sesion,
-          edr.tipo_de_escenario,
-          edr.tipo_de_estimacion,
-          edr.netting,
-          edr.sistema,
-          edr.scm,
-          edr.t1,
-          edr.t2,
-          edr.t3
+          edr.tt                                         AS riesgoTT
         FROM estimacion_de_riesgo edr
         WHERE id_sesion = '${SESSION_ID}'
               AND tipo_de_escenario = 'BACKTEST'
@@ -71,14 +61,10 @@ Pipeline para archivo D
       </origin>
     </step>
 
-    <!-- Save to file -->
-    <!--<step type="stdout">-->
-    <!--&lt;!&ndash;<delimiter>&#009;&#009;&#009;</delimiter>&ndash;&gt;-->
-    <!--<delimiter>;</delimiter>-->
-    <!--</step>-->
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/T${INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>;</delimiter>
+      <write-header>false</write-header>
     </step>
   </steps>
 </pipeline>

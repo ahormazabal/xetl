@@ -20,101 +20,154 @@ Pipeline para archivo D
           ct,
           f,
           riesgo_t                                       AS riesgoT,
-          riesgo_tt                                      AS riesgoTT,
-          '--'                                           AS fin_archivo,
-          id_sesion,
-          tipo_de_escenario,
-          tipo_de_estimacion,
-          netting,
-          sistema,
-          scm,
-          t1,
-          t2,
-          t3
+          riesgo_tt                                      AS riesgoTT
         FROM
-          (SELECT -- T-0
+
+          -- Construir datos de archivo:
+
+          -- Si fecha__proceso = primera fecha liquidacion
+          --    filtrar t1
+          --    dejar t2y t3
+          --  si primera fecha de liquidacion es mayor que fecha proceso
+          --    dejar t1
+          --    agrupar t2 y t3
+          --
+          -- luego filtrar registros vacio.
+
+          (SELECT
+             -- T1
              *,
-             t_1 AS riesgo_t,
-             tt1 AS riesgo_tt,
-             get_fecha_liquidacion(fecha::DATE, 0) AS fecha_proyeccion
+             t_1                                                                      AS riesgo_t,
+             tt1                                                                      AS riesgo_tt,
+             get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}' :: VARCHAR, 0) AS fecha_proyeccion
            FROM estimacion_de_riesgo
-           WHERE id_sesion = '${SESSION_ID}'
-                 AND tipo_de_escenario = 'HISTORICO'
-                 AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
-                      OR is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3))
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}'
+
            UNION
-           SELECT -- T-1
+           -- T2
+           SELECT
              *,
-             t_2 AS riesgo_t,
-             tt2 AS riesgo_tt,
-             get_fecha_liquidacion(fecha::DATE, 1) AS fecha_proyeccion
+             t_2                                                           AS riesgo_t,
+             tt2                                                           AS riesgo_tt,
+             get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 1) AS fecha_proyeccion
            FROM estimacion_de_riesgo
-           WHERE id_sesion = '${SESSION_ID}'
-                 AND tipo_de_escenario = 'HISTORICO'
-                 AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
-                      OR is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3))
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) = '${DATE}'
+
            UNION
-           SELECT -- T-2
+           -- T3
+           SELECT
              *,
-             t_3 AS riesgo_t,
-             tt3 AS riesgo_tt,
-             get_fecha_liquidacion(fecha::DATE, 2) AS fecha_proyeccion
+             t_3                                                           AS riesgo_t,
+             tt3                                                           AS riesgo_tt,
+             get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) AS fecha_proyeccion
            FROM estimacion_de_riesgo
-           WHERE id_sesion = '${SESSION_ID}'
-                 AND tipo_de_escenario = 'HISTORICO'
-                 AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)
-                      OR is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3))
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) = '${DATE}'
+
+           UNION
+           -- Agrupar T2 y T3
+           SELECT
+             fecha,
+             id_sesion,
+             tipo_de_escenario,
+             tipo_de_estimacion,
+             netting,
+             sistema,
+             scm,
+             cm,
+             pt,
+             cl,
+             ct,
+             f,
+             t1,
+             t2,
+             t3,
+             NULL                                                          AS tt,
+             NULL                                                          AS tt1,
+             NULL                                                          AS tt2,
+             NULL                                                          AS tt3,
+             NULL                                                          AS t_1,
+             NULL                                                          AS t_2,
+             NULL                                                          AS t_3,
+             NULL                                                          AS t_suma,
+             NULL                                                          AS tt_cvar,
+             NULL                                                          AS t_suma_cvar,
+             NULL                                                          AS escenarios_total,
+             NULL                                                          AS escenarios_t1,
+             NULL                                                          AS escenarios_t2,
+             NULL                                                          AS escenarios_t3,
+             sum(riesgo_t)                                                 AS riesgo_t,
+             sum(riesgo_tt)                                                AS riesgo_tt,
+             get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 1) AS fecha_proyeccion
+           FROM (SELECT
+                   *,
+                   t_2 AS riesgo_t,
+                   tt2 AS riesgo_tt
+                 FROM estimacion_de_riesgo
+
+                 UNION
+                 SELECT
+                   *,
+                   t_3 AS riesgo_t,
+                   tt3 AS riesgo_tt
+                 FROM estimacion_de_riesgo
+
+                ) AS groupdata
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}'
+           GROUP BY fecha, id_sesion, tipo_de_escenario, tipo_de_estimacion, netting,
+             sistema, scm, cm, pt, cl, ct, f, t1, t2, t3
+
           ) AS data
-        --         Niveles
-        WHERE (
-          is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_cclv_ct(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_sistema_ct(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_scm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_cm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
-          OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
-        )
+
+        -- Niveles
+        WHERE
+          id_sesion = '${SESSION_ID}'
+          AND tipo_de_escenario = 'HISTORICO'
+          AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1) OR
+               is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3))
+          AND (
+            is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_cclv_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_sistema_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_scm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_cm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
+          )
         ORDER BY
---           nivel ASC,
+          nivel ASC,
           tipo_de_estimacion ASC,
-          fecha_proyeccion ASC,
-          sistema ASC NULLS FIRST,
-          scm ASC NULLS FIRST,
           cm ASC NULLS FIRST,
           pt ASC NULLS FIRST,
           cl ASC NULLS FIRST,
           ct ASC NULLS FIRST,
-          f ASC NULLS FIRST
+          f ASC NULLS FIRST,
+          fecha_proyeccion ASC
       </origin>
     </step>
 
-     <!--Save to file-->
+    <!--Save to file-->
     <!--<step type="stdout">-->
-      <!--<delimiter>&#009;&#009;&#009;</delimiter>-->
-      <!--<delimiter>;</delimiter>-->
+    <!--<delimiter>&#009;&#009;&#009;</delimiter>-->
+    <!--<delimiter>;</delimiter>-->
     <!--</step>-->
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/D${INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>;</delimiter>
+      <write-header>false</write-header>
     </step>
-    <!--<step type="savecsv">-->
-      <!--<destination>${OUTPUT_DIR}/D${INTRADAY_ID}${DATE_SHORT}.csv</destination>-->
-      <!--<delimiter>;</delimiter>-->
-    <!--</step>-->
   </steps>
 </pipeline>

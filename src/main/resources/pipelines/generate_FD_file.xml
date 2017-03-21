@@ -16,17 +16,7 @@ Pipeline para archivo D
           ct,
           f,
           tt                                             AS riesgoT,
-          t_suma                                         AS riesgoTT,
-          '--'                                           AS fin_archivo,
-          id_sesion,
-          tipo_de_escenario,
-          tipo_de_estimacion,
-          netting,
-          sistema,
-          scm,
-          t1,
-          t2,
-          t3
+          tt                                             AS riesgoTT
         FROM estimacion_de_riesgo
         WHERE id_sesion = '${SESSION_ID}'
               AND tipo_de_escenario = 'CRISIS'
@@ -62,6 +52,7 @@ Pipeline para archivo D
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/FD${INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>;</delimiter>
+      <write-header>false</write-header>
     </step>
   </steps>
 </pipeline>

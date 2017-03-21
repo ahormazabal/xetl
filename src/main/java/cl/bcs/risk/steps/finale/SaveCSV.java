@@ -30,7 +30,9 @@ public class SaveCSV extends AbstractBaseStep
 
   private String delimiter;
 
-  private volatile boolean headerWritten;
+  private volatile boolean headerWritten = false;
+
+  private boolean writeHeader;
 
   private Writer dataWriter = null;
 
@@ -45,7 +47,7 @@ public class SaveCSV extends AbstractBaseStep
 
     destination = getRequiredProperty("destination");
     delimiter = getOptionalProperty("delimiter", DEFAULT_DELIMITER);
-
+    writeHeader = Boolean.valueOf(getOptionalProperty("write-header", "true"));
     destFile = new File(destination);
   }
 
@@ -55,7 +57,7 @@ public class SaveCSV extends AbstractBaseStep
 
     try {
 
-      if(destFile.exists()) {
+      if (destFile.exists()) {
         LOG.warn("Replacing existing file: " + destFile.getCanonicalPath());
         destFile.delete();
       }
@@ -67,11 +69,13 @@ public class SaveCSV extends AbstractBaseStep
       throw new RuntimeException("Error creating file: " + e.getMessage(), e);
     }
 
+    if (writeHeader) {
+      recordStream = recordStream.peek(this::writeHeader);
+    }
+
     Stream<Character> charStream = recordStream
-        .peek(this::writeHeader)
         .map(this::recordToCSV)
         .flatMap(s -> s.chars().mapToObj(i -> (char) i));
-
 
     try (Writer writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(destFile)));
          Reader dataReader = new CharacterStreamReader(charStream)) {

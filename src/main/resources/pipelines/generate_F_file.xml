@@ -14,32 +14,26 @@ Pipeline para archivo D
           pt,
           ct,
           f,
-          val              AS valor,
-          '--'             AS fin_archivo,
-          id_sesion,
-          tipo_de_escenario,
-          sistema,
-          scm,
-          t,
-          cuenta
+          val              AS valor
         FROM estimacion_garantias
         WHERE id_sesion = '${SESSION_ID}'
               AND tipo_de_escenario = 'HISTORICO'
               AND cuenta = 'CORRIENTE'
               AND t = 3
-              -- Niveles
---               AND (
---                 is_nivel_cclv_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
---                 OR is_nivel_sistema_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
---                 OR is_nivel_scm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
---                 OR is_nivel_cm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
---                 OR is_nivel_cclv_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
---                 OR is_nivel_sistema_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
---                 OR is_nivel_scm_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
---                 OR is_nivel_cm_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
---                 OR is_nivel_ct1(NULL, sistema, scm, cm, pt, NULL, ct, f)
---                 OR is_nivel_ct2(NULL, sistema, scm, cm, pt, NULL, ct, f)
---               )
+              AND (scm IS DISTINCT FROM 'DE' OR (ct NOTNULL AND f NOTNULL))
+        -- Niveles
+        --               AND (
+        --                 is_nivel_cclv_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+        --                 OR is_nivel_sistema_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+        --                 OR is_nivel_scm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+        --                 OR is_nivel_cm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+        --                 OR is_nivel_cclv_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
+        --                 OR is_nivel_sistema_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
+        --                 OR is_nivel_scm_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
+        --                 OR is_nivel_cm_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
+        --                 OR is_nivel_ct1(NULL, sistema, scm, cm, pt, NULL, ct, f)
+        --                 OR is_nivel_ct2(NULL, sistema, scm, cm, pt, NULL, ct, f)
+        --               )
         ORDER BY
           sistema ASC NULLS FIRST,
           scm ASC NULLS FIRST,
@@ -58,6 +52,7 @@ Pipeline para archivo D
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/F${INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>;</delimiter>
+      <write-header>false</write-header>
     </step>
   </steps>
 </pipeline>

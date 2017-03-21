@@ -14,14 +14,7 @@ Pipeline para archivo D
           pt,
           ct,
           f,
-          val                                              AS valor,
-          '--'                                             AS fin_archivo,
-          id_sesion,
-          tipo_de_escenario,
-          sistema,
-          scm,
-          t,
-          cuenta
+          val                                              AS valor
         FROM estimacion_garantias
         WHERE id_sesion = '${SESSION_ID}'
               AND tipo_de_escenario = 'CRISIS'
@@ -63,6 +56,7 @@ Pipeline para archivo D
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/GG${INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>;</delimiter>
+      <write-header>false</write-header>
     </step>
   </steps>
 </pipeline>
