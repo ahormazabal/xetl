@@ -16,7 +16,8 @@ Pipeline para archivo D
           cm,
           pt,
           fecha_proyeccion,
-          cl,
+          CASE WHEN is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f) THEN NULL
+          ELSE cl END                                    AS cl,
           ct,
           f,
           riesgo_t                                       AS riesgoT,

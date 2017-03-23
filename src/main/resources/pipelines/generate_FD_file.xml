@@ -12,7 +12,8 @@ Pipeline para archivo D
           get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
           cm,
           pt,
-          cl,
+          CASE WHEN is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f) THEN NULL
+          ELSE cl END                                    AS cl,
           ct,
           f,
           tt                                             AS riesgoT,

@@ -19,7 +19,8 @@ Pipeline para archivo D
           edr.cm                                         AS cm,
           edr.pt                                         AS pt,
           edr.fecha                                      AS fecha_proyeccion,
-          edr.cl                                         AS cl,
+          CASE WHEN is_nivel_pt(edr.netting, edr.sistema, edr.scm, edr.cm, edr.pt, edr.cl, edr.ct, edr.f) THEN NULL
+          ELSE cl END                                    AS cl,
           edr.ct                                         AS ct,
           edr.f                                          AS f,
           edr.tt                                         AS riesgoT,
