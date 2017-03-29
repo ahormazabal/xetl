@@ -13,9 +13,9 @@ Pipeline para archivo D
           WHEN is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f) THEN 'CL'
           ELSE get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) END AS nivel,
           cm,
-          pt,
-          CASE WHEN is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f) THEN NULL
-          ELSE cl END                                    AS cl,
+          CASE WHEN is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f) THEN cl
+          ELSE pt END                                             AS pt,
+          cl,
           ct,
           f,
           tt                                                      AS riesgoT,
@@ -26,7 +26,11 @@ Pipeline para archivo D
               AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3)
               -- Niveles
               AND (
-                is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+                is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
@@ -34,6 +38,10 @@ Pipeline para archivo D
                 OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cclv_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_sistema_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_scm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
               )

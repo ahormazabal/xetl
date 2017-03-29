@@ -14,8 +14,7 @@ Pipeline para archivo D
           get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
           cm,
           pt,
-          CASE WHEN is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f) THEN NULL
-          ELSE cl END                                    AS cl,
+          cl,
           ct,
           f,
           tt                                         AS riesgoT,
@@ -56,6 +55,9 @@ Pipeline para archivo D
           tipo_de_estimacion ASC
       </origin>
     </step>
+
+    <!-- Corregir anomalia entre niveles PT y CL1 -->
+    <step type="pt_cl1_LevelCorrector"/>
 
     <!-- Save to file -->
     <!--<step type="stdout">-->

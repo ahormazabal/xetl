@@ -19,8 +19,7 @@ Pipeline para archivo D
           edr.cm                                         AS cm,
           edr.pt                                         AS pt,
           edr.fecha                                      AS fecha_proyeccion,
-          CASE WHEN is_nivel_pt(edr.netting, edr.sistema, edr.scm, edr.cm, edr.pt, edr.cl, edr.ct, edr.f) THEN NULL
-          ELSE cl END                                    AS cl,
+          edr.cl                                         AS cl,
           edr.ct                                         AS ct,
           edr.f                                          AS f,
           edr.tt                                         AS riesgoT,
@@ -61,6 +60,9 @@ Pipeline para archivo D
           fecha_proyeccion ASC
       </origin>
     </step>
+
+    <!-- Corregir anomalia entre niveles PT y CL1 -->
+    <step type="pt_cl1_LevelCorrector"/>
 
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/T${INTRADAY_ID}${DATE_SHORT}.csv</destination>

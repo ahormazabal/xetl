@@ -16,8 +16,7 @@ Pipeline para archivo D
           cm,
           pt,
           fecha_proyeccion,
-          CASE WHEN is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f) THEN NULL
-          ELSE cl END                                    AS cl,
+          cl,
           ct,
           f,
           riesgo_t                                       AS riesgoT,
@@ -161,6 +160,11 @@ Pipeline para archivo D
           fecha_proyeccion ASC
       </origin>
     </step>
+
+
+    <!-- Corregir anomalia entre niveles PT y CL1 -->
+    <step type="pt_cl1_LevelCorrector"/>
+
 
     <!--Save to file-->
     <!--<step type="stdout">-->

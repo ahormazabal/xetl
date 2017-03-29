@@ -37,6 +37,7 @@ public final class StepRegister {
     register.put("mValuation", InstrumentMValuationFilter.class);
     register.put("removeOMG", RemoveOMGFilter.class);
     register.put("gCoverageDiscountFilter", GCoverageDiscountFilter.class);
+    register.put("pt_cl1_LevelCorrector", PT_CL1_LevelCorrector.class);
 
 
     // Register Finalizers

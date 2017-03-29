@@ -8,9 +8,10 @@ import java.util.stream.Collectors;
 /**
  * Registro (tupla) mutable que permite modificar valores y agregar columnas.
  *
- * Todos los iteradores de esta clase devuelven los valores en el mismo orden.
+ * Todos los iteradores de esta clase devuelven los valores en el mismo orden en que
+ * las columnas estan indexadas.
  *
- * <b>Esta clase no es thread-safe.</b>
+ * <b>Esta clase NO ES thread-safe.</b>
  *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
