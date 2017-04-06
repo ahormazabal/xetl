@@ -53,8 +53,8 @@ public class OMGFilenameFilter extends AbstractBaseStep
           try {
 
             // add fields from filename
-            String intradayId = filename.substring(1, 2);
-            String filedate = filename.substring(2, 8);
+            String intradayId = filename.substring(1, 3);
+            String filedate = filename.substring(3, 9);
             record.insert(0, DATE_FIELD, DateUtils.formatDate(filedate, sdfDateIn, sdfDateOut));
             record.insert(1, INTRADAY_FIELD, intradayId);
 
