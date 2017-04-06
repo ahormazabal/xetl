@@ -21,12 +21,12 @@ import java.util.stream.Stream;
  * Este filtro procesa registros de operaciones y descuenta la cantidad vendida
  * segun la cuenta de cobertura encontrada en la tabla de garantias.
  * <p>
- *   El descuento de cada cuenta se realizara en el orden en que los registros son procesados. Por ende
- *   el orden en que el origen procesa los datos puede ser relevante.
+ * El descuento de cada cuenta se realizara en el orden en que los registros son procesados. Por ende
+ * el orden en que el origen procesa los datos puede ser relevante.
  * </p>
  * <p>
- *   Al 30-01-2017, este filtro se usa en el pipeline "extractOperations" y es importante
- *   que el origen este ordenado por fecha de liquidacion de modo ascendente.
+ * Al 30-01-2017, este filtro se usa en el pipeline "extractOperations" y es importante
+ * que el origen este ordenado por fecha de liquidacion de modo ascendente.
  * </p>
  *
  * @author Alberto Hormazabal Cespedes
@@ -112,21 +112,24 @@ public class GCoverageDiscountFilter extends AbstractBaseStep
                 BigDecimal sellAmnt = new BigDecimal(record.get("monto_vendido"));
                 BigDecimal discountQty = recordCoverage.cantidad;
 
-                BigDecimal newSellQty = sellQty.subtract(discountQty).max(BigDecimal.ZERO);
-                BigDecimal newSellAmnt = sellAmnt.divide(sellQty, MathContext.DECIMAL32).multiply(newSellQty).setScale(0, RoundingMode.HALF_UP);
-                BigDecimal newDiscount = discountQty.subtract(sellQty).max(BigDecimal.ZERO);
+                if (sellQty.compareTo(BigDecimal.ZERO) > 0) {
 
-                // Update data
-                record.set("cant_vendida", newSellQty.toPlainString());
-                record.set("monto_vendido", newSellAmnt.toPlainString());
-                recordCoverage.cantidad = newDiscount;
-                coverages.put(coverageKey, recordCoverage);
-                LOG.info(String.format(
-                    "%s: Replaced Qty: [%s] to [%s].",
-                    coverageKey,
-                    sellQty.toPlainString(),
-                    newSellQty.toPlainString()
-                ));
+                  BigDecimal newSellQty = sellQty.subtract(discountQty).max(BigDecimal.ZERO);
+                  BigDecimal newSellAmnt = sellAmnt.divide(sellQty, MathContext.DECIMAL32).multiply(newSellQty).setScale(0, RoundingMode.HALF_UP);
+                  BigDecimal newDiscount = discountQty.subtract(sellQty).max(BigDecimal.ZERO);
+
+                  // Update data
+                  record.set("cant_vendida", newSellQty.toPlainString());
+                  record.set("monto_vendido", newSellAmnt.toPlainString());
+                  recordCoverage.cantidad = newDiscount;
+                  coverages.put(coverageKey, recordCoverage);
+                  LOG.info(String.format(
+                      "%s: Replaced Qty: [%s] to [%s].",
+                      coverageKey,
+                      sellQty.toPlainString(),
+                      newSellQty.toPlainString()
+                  ));
+                }
               }
             }
 
