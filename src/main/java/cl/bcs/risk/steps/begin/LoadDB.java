@@ -25,8 +25,9 @@ public class LoadDB extends AbstractBaseStep
 
   private static final Logger LOG = LoggerFactory.getLogger(LoadDB.class);
 
-  private String origin;
-  private String datasource;
+  private String  origin;
+  private String  datasource;
+  private Integer fetch_size;
 
 
   @Override
@@ -40,6 +41,7 @@ public class LoadDB extends AbstractBaseStep
 
     origin = getRequiredProperty("origin");
     datasource = getOptionalProperty("datasource", DataSourceManager.DEFAULT_DATASOURCE);
+    fetch_size = Integer.parseInt(getOptionalProperty("fetch_size", "0"));
 
   }
 
@@ -47,24 +49,48 @@ public class LoadDB extends AbstractBaseStep
   public Stream<? extends Record> begin() {
     LOG.info("Begin loading records from database origin: " + origin);
 
-    try (Connection cnx = getPipeline().getContext().getDataSourceManager().getConnection(datasource)) {
+    try {
+      Connection cnx = getPipeline().getContext().getDataSourceManager().getConnection(datasource);
 
-      // TODO probar otra implementacion usando CopyManager.
-      ResultSet rs = cnx.prepareStatement(origin).executeQuery();
+      try {
+        cnx.setAutoCommit(false);
 
-      // Create resultset spliterator.
-      Spliterator<Record> resultSetSpliterator;
+        PreparedStatement stmt = cnx.prepareStatement(origin);
+        if(fetch_size > 0) {
+          LOG.info("Record fetch size: " + fetch_size);
+          stmt.setFetchSize(fetch_size);
+        }
 
-      if(!rs.isBeforeFirst()) {
-        // Empty Data
-        resultSetSpliterator = Spliterators.emptySpliterator();
-        LOG.warn("No data retrieved from database.");
+        LOG.info("Executing query");
+        ResultSet rs = stmt.executeQuery();
+
+        // Create resultset spliterator.
+        Spliterator<Record> resultSetSpliterator;
+
+        if (!rs.isBeforeFirst()) {
+          // Empty Data
+          resultSetSpliterator = Spliterators.emptySpliterator();
+          LOG.warn("No data retrieved from database.");
+        } else {
+          resultSetSpliterator = Spliterators.spliteratorUnknownSize(new RecordResultSetIterator(rs), Spliterator.ORDERED);
+        }
+
+        LOG.info("Start streaming data.");
+        return StreamSupport.stream(resultSetSpliterator, false)
+            .onClose(() -> {
+              try {
+                LOG.info("Closing connection.");
+                cnx.commit();
+                cnx.close();
+              } catch (SQLException e) {
+                throw new RuntimeException("Error closing connection", e);
+              }
+            });
+
+      } catch (Exception e) {
+        cnx.close();
+        throw e;
       }
-      else {
-        resultSetSpliterator = Spliterators.spliteratorUnknownSize(new RecordResultSetIterator(rs), Spliterator.ORDERED);
-      }
-      return StreamSupport.stream(resultSetSpliterator,false);
-
     } catch (Exception e) {
       throw new RuntimeException("Error reading data from database: " + e.getMessage(), e);
     }
@@ -84,7 +110,7 @@ public class LoadDB extends AbstractBaseStep
 
 
   private class RecordResultSetIterator
-  implements Iterator<Record> {
+      implements Iterator<Record> {
 
     private final ResultSet rs;
 
