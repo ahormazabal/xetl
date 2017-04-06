@@ -21,7 +21,20 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     <!-- load records from csv-->
     <step type="loaddb">
       <origin>
-        SELECT *
+        SELECT
+          fecha,
+          id_sesion,
+          tipo_de_escenario,
+          nemo,
+          time,
+          var_99,
+          var_100,
+          ht_99,
+          ht_100,
+          var_percentil_99,
+          cvar_99,
+          valor_base,
+          valor_t0
         FROM sesion_de_mercado
         WHERE id_sesion = '${SESSION_ID}'
       </origin>
@@ -31,8 +44,8 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     <!--Save to database-->
     <!--<step type="stdout"/>-->
     <!--<step type="batchinsert">-->
-      <!--<delete_by_columns>fecha</delete_by_columns>-->
-      <!--<destination>factores</destination>-->
+    <!--<delete_by_columns>fecha</delete_by_columns>-->
+    <!--<destination>factores</destination>-->
     <!--</step>-->
     <!-- Save to file -->
     <step type="savecsv">
