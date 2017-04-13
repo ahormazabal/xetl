@@ -21,7 +21,7 @@ Pipeline para archivo D
               AND cuenta = 'CORRIENTE'
               AND t = 3
               AND (scm IS DISTINCT FROM 'DE' OR (ct NOTNULL AND f NOTNULL))
-        -- Niveles
+        --         Niveles
         --               AND (
         --                 is_nivel_cclv_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
         --                 OR is_nivel_sistema_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
@@ -44,14 +44,31 @@ Pipeline para archivo D
       </origin>
     </step>
 
+    <step type="dateformat">
+      <column>fecha</column>
+      <from>yyyy/MM/dd</from>
+      <to>yyyy-MM-dd</to>
+    </step>
+
+
+    <step type="format">
+      <!--<fecha></fecha>-->
+      <!--<intradiario></intradiario>-->
+      <cm>%2s</cm>
+      <pt>%3s</pt>
+      <ct>%-15s</ct>
+      <f>%1s</f>
+      <valor>%+019.2f</valor>
+    </step>
+
     <!-- Save to file -->
     <!--<step type="stdout">-->
-    <!--&lt;!&ndash;<delimiter>&#009;&#009;&#009;</delimiter>&ndash;&gt;-->
-    <!--<delimiter>;</delimiter>-->
+    <!--<delimiter>&#009;&#009;&#009;</delimiter>-->
+    <!--<delimiter>,</delimiter>-->
     <!--</step>-->
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/F${INTRADAY_ID}${DATE_SHORT}.csv</destination>
-      <delimiter>;</delimiter>
+      <delimiter>,</delimiter>
       <write-header>false</write-header>
     </step>
   </steps>

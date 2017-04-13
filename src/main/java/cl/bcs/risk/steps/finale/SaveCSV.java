@@ -62,6 +62,8 @@ public class SaveCSV extends AbstractBaseStep
         destFile.delete();
       }
 
+
+
       if (!destFile.createNewFile()) {
         throw new RuntimeException("File already exists: " + destFile);
       }

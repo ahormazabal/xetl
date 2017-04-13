@@ -12,12 +12,12 @@ Pipeline para archivo D
           CASE WHEN is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f) THEN 'PT'
           WHEN is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f) THEN 'CL'
           ELSE get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) END AS nivel,
-          cm,
+          cm                                                      AS cm,
           CASE WHEN is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f) THEN cl
           ELSE pt END                                             AS pt,
-          cl,
-          ct,
-          f,
+          cl                                                      AS cl,
+          ct                                                      AS ct,
+          f                                                       AS f,
           tt                                                      AS riesgoT,
           tt                                                      AS riesgoTT
         FROM estimacion_de_riesgo
@@ -57,11 +57,25 @@ Pipeline para archivo D
       </origin>
     </step>
 
+    <step type="dateformat">
+      <column>fecha</column>
+      <from>yyyy/MM/dd</from>
+      <to>yyyy-MM-dd</to>
+    </step>
+
+    <step type="format">
+      <!--<fecha></fecha>-->
+      <nivel>%-4s</nivel>
+      <cm>%2s</cm>
+      <pt>%3s</pt>
+      <cl>%3s</cl>
+      <ct>%-15s</ct>
+      <f>%1s</f>
+      <riesgoT>%+019.2f</riesgoT>
+      <riesgoTT>%+019.2f</riesgoTT>
+    </step>
+
     <!-- Save to file -->
-    <!--<step type="stdout">-->
-    <!--&lt;!&ndash;<delimiter>&#009;&#009;&#009;</delimiter>&ndash;&gt;-->
-    <!--<delimiter>;</delimiter>-->
-    <!--</step>-->
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/PT${INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>;</delimiter>

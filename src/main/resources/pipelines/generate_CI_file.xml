@@ -8,15 +8,15 @@ Pipeline para archivo CI
     <step type="loaddb">
       <origin>
         SELECT
-          p.fecha as fecha,
-          p.nemo as nombre,
-          0 as ajuste,
-          s.valor_base as precio_de_cierre,
-          0 as tir,
-          p.mercado as mercado,
-          p.grupo as grupo,
-          p.familia as familia,
-          p.valorizacion as valorizacion
+          p.fecha        AS fecha,
+          p.nemo         AS nombre,
+          0              AS ajuste,
+          s.valor_base   AS precio_de_cierre,
+          0              AS tir,
+          p.mercado      AS mercado,
+          p.grupo        AS grupo,
+          p.familia      AS familia,
+          p.valorizacion AS valorizacion
         FROM parametros p
           LEFT OUTER JOIN sesion_de_mercado s
             ON p.fecha = '${DATE}'
@@ -25,7 +25,7 @@ Pipeline para archivo CI
                AND p.nemo = s.nemo
                AND s.time = 1
         WHERE p.fecha = '${DATE}'
-        AND p.mercado = 'DE'
+              AND p.mercado = 'DE'
               AND s.id_sesion = '${SESSION_ID}'
               AND p.fecha = s.fecha
               AND p.nemo = s.nemo
@@ -34,9 +34,21 @@ Pipeline para archivo CI
       </origin>
     </step>
 
+    <step type="format">
+      <!--<fecha></fecha>-->
+      <nombre>%-20s</nombre>
+      <ajuste>%+019.4f</ajuste>
+      <precio_de_cierre>%+019.4f</precio_de_cierre>
+      <tir>%+019.4f</tir>
+      <mercado>%2s</mercado>
+      <grupo>%2s</grupo>
+      <familia>%-10s</familia>
+      <valorizacion>%+019.4f</valorizacion>
+    </step>
+
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/CI${DATE_SHORT}.csv</destination>
-      <delimiter>;</delimiter>
+      <delimiter>,</delimiter>
       <write-header>false</write-header>
     </step>
   </steps>

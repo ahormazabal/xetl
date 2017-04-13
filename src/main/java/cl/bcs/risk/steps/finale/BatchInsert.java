@@ -53,7 +53,7 @@ public class BatchInsert extends AbstractBaseStep
   @Override
   public void initialize(Pipeline pipeline, Map<String, String> properties) throws Exception {
     super.initialize(pipeline, properties);
-    LOG.info("Initializing Postgres Batch Insert Step.");
+    LOG.info("Initializing Batch Insert Step.");
 
     destination = getRequiredProperty("destination");
     delete_by_columns = getOptionalProperty("delete_by_columns", null);
@@ -143,7 +143,7 @@ public class BatchInsert extends AbstractBaseStep
       deleteQuery = null;
     }
 
-    LOG.info("Postgres Batch Insert Step initialized");
+    LOG.info("Batch Insert Step initialized");
   }
 
   @Override
@@ -161,10 +161,6 @@ public class BatchInsert extends AbstractBaseStep
 //        .flatMap(s -> s.chars().mapToObj(i -> (char) i));
 
     try {
-
-      if (!(sqlConnection instanceof BaseConnection)) {
-        throw new SQLException("Inserter Step only works with postgres datasources.");
-      }
 
       // BEGIN TRANSACTION.
       sqlConnection.setAutoCommit(false);

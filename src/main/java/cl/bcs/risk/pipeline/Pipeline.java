@@ -135,6 +135,9 @@ public class Pipeline
     validate();
 
     LOG.info("Running pipeline: " + name);
+    LOG.info("PIPELINE: " + pipelineSteps.stream()
+        .map(step -> step.toString())
+        .reduce("", (s, s2) -> s + s2 + ", "));
 
     // Exec Begin
     Iterator<Step> iter = pipelineSteps.iterator();

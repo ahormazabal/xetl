@@ -10,10 +10,10 @@ Pipeline para archivo D
         SELECT
           fecha                                            AS fecha,
           get_cod_nivel(sistema, scm, cm, pt, NULL, ct, f) AS nivel,
-          cm,
-          pt,
-          ct,
-          f,
+          cm                                               AS cm,
+          pt                                               AS pt,
+          ct                                               AS ct,
+          f                                                AS f,
           val                                              AS valor
         FROM estimacion_garantias
         WHERE id_sesion = '${SESSION_ID}'
@@ -48,11 +48,24 @@ Pipeline para archivo D
       </origin>
     </step>
 
+    <step type="dateformat">
+      <column>fecha</column>
+      <from>yyyy/MM/dd</from>
+      <to>yyyy-MM-dd</to>
+    </step>
+
+
+    <step type="format">
+      <!--<fecha></fecha>-->
+      <nivel>%-4s</nivel>
+      <cm>%2s</cm>
+      <pt>%3s</pt>
+      <ct>%-15s</ct>
+      <f>%1s</f>
+      <valor>%-19.2f</valor>
+    </step>
+
     <!-- Save to file -->
-    <!--<step type="stdout">-->
-    <!--&lt;!&ndash;<delimiter>&#009;&#009;&#009;</delimiter>&ndash;&gt;-->
-    <!--<delimiter>;</delimiter>-->
-    <!--</step>-->
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/GG${INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>;</delimiter>
