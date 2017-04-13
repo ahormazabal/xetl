@@ -78,7 +78,7 @@ Pipeline para archivo D
       <nivel>%-4s</nivel>
       <cm>%2s</cm>
       <pt>%3s</pt>
-      <fecha_proyeccion></fecha_proyeccion>
+      <!--<fecha_proyeccion></fecha_proyeccion>-->
       <cl>%3s</cl>
       <ct>%-15s</ct>
       <f>%1s</f>
