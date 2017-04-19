@@ -18,6 +18,15 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
+ * Operacion terminal para escirbir datos a la base de datos.
+ *
+ * Esta operacion solo funciona con postgresql, y asume que no habra colisiones de
+ * llave primaria en los datos que se estan ingresando, por ende su operacion es mucho
+ * mas rapida que {@link BatchInsert}.
+ *
+ * Si se necesita controlar los conflictos de llave, usar {@link BatchInsert}.
+ *
+ *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */

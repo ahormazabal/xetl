@@ -17,6 +17,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * Operacion terminal para batch insert a la BDD.
+ *
+ * Esta operacion graba los registro a la base de datos, y opcionalmente borra los registros
+ * previamente existentes segun las columnas entregadas en 'delete_by_columns', simulando una operacion
+ * de "upsert".
+ *
+ * Si se desea ingresar una gran cantidad de registros a la BD (Postgres) y se sabe que no habra colisiones
+ * de llave primaria, usar {@link SaveDB}.
+ *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */

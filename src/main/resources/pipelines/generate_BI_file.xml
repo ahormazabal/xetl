@@ -1,0 +1,51 @@
+<!--
+Pipeline para archivo D
+-->
+<pipeline name="generate_BI_file">
+  <steps>
+
+    <!-- load records from csv-->
+    <step type="loaddb">
+      <origin>
+        SELECT
+          s.fecha                                    AS fecha,
+          s.nemo                                     AS nemo,
+          s.valor_base                               AS precio_real,
+          COALESCE(p.valorizacion, 0)                AS precio_estimado,
+          s.valor_base - COALESCE(p.valorizacion, 0) AS dif
+        FROM sesion_de_mercado s
+          LEFT OUTER JOIN parametros p
+            ON p.fecha = s.fecha
+               AND p.nemo = s.nemo
+        WHERE s.id_sesion = '${SESSION_ID}'
+              AND s.fecha = '${DATE}'
+              AND s.tipo_de_escenario = 'HISTORICO'
+              AND s.time = 1
+        ORDER BY s.nemo ASC
+      </origin>
+    </step>
+
+    <!--<step type="dateformat">-->
+    <!--<column>fecha_proceso</column>-->
+    <!--<from>yyyy/MM/dd</from>-->
+    <!--<to>yyyy-MM-dd</to>-->
+    <!--</step>-->
+
+    <step type="format">
+      <!--<fecha></fecha>-->
+      <nemo>%-20s</nemo>
+      <precio_real>%+019.6f</precio_real>
+      <precio_estimado>%+019.6f</precio_estimado>
+      <dif>%+019.6f</dif>
+    </step>
+
+    <!-- Save to file -->
+    <step type="savecsv">
+      <destination>${OUTPUT_DIR}/BI${DATE_SHORT}.csv</destination>
+      <delimiter>,</delimiter>
+      <write-header>false</write-header>
+    </step>
+  </steps>
+</pipeline>
+
+

@@ -11,10 +11,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * Este filtro procesa registros de operaciones y agrega registros adicionales cuando
- * corresponde a un registro IF. Basicamente agrega un registro adicional con nemo DEP y otro
- * con nemo SVS, siempre y cuando estos nemos nuevos esten presentes en los parametros de instrumento
- * del dia de proceso.
+ * Este filtro procesa registros de operaciones y modifica el nemo cuando
+ * corresponde a un registro IF.
  *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)

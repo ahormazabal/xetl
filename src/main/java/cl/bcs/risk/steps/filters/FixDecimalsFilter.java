@@ -8,6 +8,9 @@ import java.util.*;
 import java.util.stream.Stream;
 
 /**
+ * Filtro para cambio de separador decimal.
+ * No funciona con numeros que tienen separador de miles.
+ *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */

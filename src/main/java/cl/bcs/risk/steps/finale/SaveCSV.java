@@ -14,6 +14,8 @@ import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 /**
+ * Operacion terminal para grabar los registros a archivo CSV.
+ *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */

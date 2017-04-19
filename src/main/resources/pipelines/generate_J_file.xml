@@ -1,69 +1,69 @@
 <!--
 Pipeline para archivo D
 -->
-<pipeline name="generate_T_file">
+<pipeline name="generate_J_file">
   <steps>
 
     <!-- load records from csv-->
     <step type="loaddb">
       <origin>
         SELECT
-          (SELECT f.fecha
-           FROM factores f
-           WHERE f.fecha &lt; '${DATE}'
-           ORDER BY fecha DESC NULLS LAST
-           LIMIT 1)                                      AS fecha,
+          fecha                                          AS fecha,
           '${INTRADAY_ID}'                               AS correlativo,
           get_cod_arbol(sistema)                         AS arbol,
           get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
-          edr.cm                                         AS cm,
-          edr.pt                                         AS pt,
-          edr.fecha                                      AS fecha_proyeccion,
-          edr.cl                                         AS cl,
-          edr.ct                                         AS ct,
-          edr.f                                          AS f,
-          edr.tt                                         AS riesgoT,
-          edr.tt                                         AS riesgoTT
-        FROM estimacion_de_riesgo edr
+          cm                                             AS cm,
+          pt                                             AS pt,
+          cl                                             AS cl,
+          ct                                             AS ct,
+          f                                              AS f,
+          array_to_string(
+              ARRAY(
+                  SELECT to_char(num :: NUMERIC, 'SG000000000000000.00')
+                  FROM (SELECT json_array_elements_text(escenarios_total :: JSON) AS num) worf
+                  --LIMIT 20 -- para limitar el numero de evalues
+              ), ',')                                    AS evalues
+        FROM estimacion_de_riesgo
         WHERE id_sesion = '${SESSION_ID}'
-              AND tipo_de_escenario = 'BACKTEST'
-              AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1))
+              AND tipo_de_escenario = 'DETERMINISTICO'
+              AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3)
               -- Niveles
               AND (
                 is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cclv_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_sistema_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_scm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
               )
         ORDER BY
+          nivel ASC,
+          tipo_de_estimacion ASC,
+          cm ASC NULLS FIRST,
           pt ASC NULLS FIRST,
           cl ASC NULLS FIRST,
           ct ASC NULLS FIRST,
-          f ASC NULLS FIRST,
-          cm ASC NULLS FIRST,
-          scm ASC NULLS FIRST,
-          sistema ASC NULLS FIRST,
-          tipo_de_estimacion ASC,
-          fecha_proyeccion ASC
+          f ASC NULLS FIRST
       </origin>
     </step>
 
     <!-- Corregir anomalia entre niveles PT y CL1 -->
     <step type="pt_cl1_LevelCorrector"/>
-
 
     <step type="dateformat">
       <column>fecha</column>
@@ -72,23 +72,19 @@ Pipeline para archivo D
     </step>
 
     <step type="format">
-      <!--<fecha_proceso></fecha_proceso>-->
-      <correlativo>%2s</correlativo>
       <arbol>%-20s</arbol>
       <nivel>%-4s</nivel>
       <cm>%2s</cm>
       <pt>%3s</pt>
-      <!--<fecha_proyeccion></fecha_proyeccion>-->
       <cl>%3s</cl>
       <ct>%-15s</ct>
       <f>%1s</f>
-      <riesgoT>%+019.2f</riesgoT>
-      <riesgoTT>%+019.2f</riesgoTT>
     </step>
 
+    <!-- Save to file -->
     <step type="savecsv">
-      <destination>${OUTPUT_DIR}/T${INTRADAY_ID}${DATE_SHORT}.csv</destination>
-      <delimiter>;</delimiter>
+      <destination>${OUTPUT_DIR}/J${INTRADAY_ID}${DATE_SHORT}.csv</destination>
+      <delimiter>,</delimiter>
       <write-header>false</write-header>
     </step>
   </steps>

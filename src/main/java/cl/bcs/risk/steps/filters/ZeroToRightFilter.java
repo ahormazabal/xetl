@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
+ * Este filtro setea todas las columnas a 0 a partiendo de la columna indicada.
+ *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)
  */
