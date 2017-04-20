@@ -8,20 +8,30 @@ Pipeline para archivo D
     <step type="loaddb">
       <origin>
         SELECT
-          s.fecha                                    AS fecha,
-          s.nemo                                     AS nemo,
-          s.valor_base                               AS precio_real,
-          COALESCE(p.valorizacion, 0)                AS precio_estimado,
-          s.valor_base - COALESCE(p.valorizacion, 0) AS dif
-        FROM sesion_de_mercado s
-          LEFT OUTER JOIN parametros p
-            ON p.fecha = s.fecha
-               AND p.nemo = s.nemo
-        WHERE s.id_sesion = '${SESSION_ID}'
-              AND s.fecha = '${DATE}'
-              AND s.tipo_de_escenario = 'HISTORICO'
-              AND s.time = 1
-        ORDER BY s.nemo ASC
+          data.fecha                              AS fecha,
+          data.nemo                               AS nemo,
+          data.fecha_estimacion                   AS fecha_estimacion,
+          data.precio_estimado                    AS precio_estimado,
+          data.precio_real                        AS precio_real,
+          data.precio_real - data.precio_estimado AS dif
+        FROM (
+               SELECT
+                 s.fecha                                           AS fecha,
+                 s.nemo                                            AS nemo,
+                 p.fecha                                           AS fecha_estimacion,
+                 s.valor_base + COALESCE(NULLIF(var_99, 'NaN'), 0) AS precio_estimado,
+                 COALESCE(p.valorizacion, 0)                       AS precio_real
+               FROM sesion_de_mercado s
+                 LEFT OUTER JOIN parametros p
+                   ON p.fecha = '${DATE}'
+                      AND p.nemo = s.nemo
+               WHERE s.fecha = (SELECT MAX(f.fecha)
+                                FROM factores f
+                                WHERE f.fecha &lt; '${DATE}')
+                     AND s.tipo_de_escenario = 'HISTORICO'
+                     AND s.time = 1
+             ) data
+        ORDER BY data.nemo ASC
       </origin>
     </step>
 
