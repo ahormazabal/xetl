@@ -8,11 +8,9 @@ Pipeline para archivo D
     <step type="loaddb">
       <origin>
         SELECT
-          (SELECT f.fecha
+          (SELECT MAX(f.fecha)
            FROM factores f
-           WHERE f.fecha &lt; '${DATE}'
-           ORDER BY fecha DESC NULLS LAST
-           LIMIT 1)                                      AS fecha,
+           WHERE f.fecha &lt; '${DATE}')                 AS fecha,
           '${INTRADAY_ID}'                               AS correlativo,
           get_cod_arbol(sistema)                         AS arbol,
           get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
@@ -67,7 +65,7 @@ Pipeline para archivo D
 
 
     <step type="dateformat">
-      <column>fecha</column>
+      <column>fecha_proyeccion</column>
       <from>yyyy/MM/dd</from>
       <to>yyyy-MM-dd</to>
     </step>

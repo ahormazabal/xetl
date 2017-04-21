@@ -23,11 +23,9 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
       <origin>
         SELECT *
         FROM operaciones
-        WHERE fecha = (SELECT f.fecha
+        WHERE fecha = (SELECT MAX(f.fecha)
                        FROM factores f
-                       WHERE f.fecha &lt; '${DATE}'
-                       ORDER BY fecha DESC NULLS LAST
-                       LIMIT 1)
+                       WHERE f.fecha &lt; '${DATE}')
               AND intradiario = '${INTRADAY_ID}'
         ORDER BY
           camara,
