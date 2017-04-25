@@ -67,7 +67,7 @@ Pipeline para archivo D
     <!--<delimiter>,</delimiter>-->
     <!--</step>-->
     <step type="savecsv">
-      <destination>${OUTPUT_DIR}/F${INTRADAY_ID}${DATE_SHORT}.csv</destination>
+      <destination>${OUTPUT_DIR}/F${OLD_INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>,</delimiter>
       <write-header>false</write-header>
     </step>

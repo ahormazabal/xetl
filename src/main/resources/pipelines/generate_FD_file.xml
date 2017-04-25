@@ -80,7 +80,7 @@ Pipeline para archivo D
 
     <!-- Save to file -->
     <step type="savecsv">
-      <destination>${OUTPUT_DIR}/FD${INTRADAY_ID}${DATE_SHORT}.csv</destination>
+      <destination>${OUTPUT_DIR}/FD${OLD_INTRADAY_ID}${DATE_SHORT}.csv</destination>
       <delimiter>,</delimiter>
       <write-header>false</write-header>
     </step>
