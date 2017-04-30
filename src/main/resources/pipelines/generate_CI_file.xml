@@ -47,7 +47,7 @@ Pipeline para archivo CI
     </step>
 
     <step type="savecsv">
-      <destination>${OUTPUT_DIR}/CI${DATE_SHORT}.csv</destination>
+      <destination>${OUTPUT_DIR}/CI${DATE_SHORT}</destination>
       <delimiter>,</delimiter>
       <write-header>false</write-header>
     </step>

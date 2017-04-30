@@ -9,7 +9,7 @@ Pipeline para archivo D
       <origin>
         SELECT
           fecha            AS fecha,
-          '${INTRADAY_ID}' AS intradiario,
+          '${OLD_INTRADAY_ID}' AS intradiario,
           cm,
           pt,
           ct,
@@ -53,7 +53,7 @@ Pipeline para archivo D
 
     <step type="format">
       <!--<fecha></fecha>-->
-      <!--<intradiario></intradiario>-->
+      <intradiario>%02d</intradiario>
       <cm>%2s</cm>
       <pt>%3s</pt>
       <ct>%-15s</ct>
@@ -67,7 +67,7 @@ Pipeline para archivo D
     <!--<delimiter>,</delimiter>-->
     <!--</step>-->
     <step type="savecsv">
-      <destination>${OUTPUT_DIR}/F${OLD_INTRADAY_ID}${DATE_SHORT}.csv</destination>
+      <destination>${OUTPUT_DIR}/F${OLD_INTRADAY_ID}${DATE_SHORT}</destination>
       <delimiter>,</delimiter>
       <write-header>false</write-header>
     </step>
