@@ -45,15 +45,20 @@ public class ColumnFormatter extends AbstractBaseStep
     return recordStream
         .map(Record::mutable)
         .map(record -> {
-          columnFormats.entrySet().forEach(entry -> {
-            if (record.containsKey(entry.getKey())) {
-              String format = entry.getValue();
-              String oldVal = record.get(entry.getKey());
-              Object newVal = getConvertionObject(format, oldVal);
-              record.set(entry.getKey(), String.format(Locale.US, format, newVal));
-            }
-          });
-          return record;
+          try {
+            columnFormats.entrySet().forEach(entry -> {
+              if (record.containsKey(entry.getKey())) {
+                String format = entry.getValue();
+                String oldVal = record.get(entry.getKey());
+                Object newVal = getConvertionObject(format, oldVal);
+                record.set(entry.getKey(), String.format(Locale.US, format, newVal));
+              }
+            });
+            return record;
+          } catch (Exception e) {
+            LOG.error("Error procesando registro: " + record.toString());
+            throw new RuntimeException(e);
+          }
         });
   }
 
