@@ -165,7 +165,7 @@ Pipeline para archivo D
 
 
     <step type="dateformat">
-      <column>fecha</column>
+      <column>fecha_proceso</column>
       <from>yyyy/MM/dd</from>
       <to>yyyy-MM-dd</to>
     </step>
