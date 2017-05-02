@@ -17,8 +17,8 @@ Pipeline para archivo D
           cl                                             AS cl,
           ct                                             AS ct,
           f                                              AS f,
-          tt                                             AS riesgoT,
-          tt                                             AS riesgoTT
+          tt                                             AS riesgot,
+          tt                                             AS riesgott
         FROM estimacion_de_riesgo
         WHERE id_sesion = '${SESSION_ID}'
               AND tipo_de_escenario = 'HISTORICO'
@@ -75,8 +75,8 @@ Pipeline para archivo D
       <cl>%3s</cl>
       <ct>%-15s</ct>
       <f>%1s</f>
-      <riesgoT>%+019.2f</riesgoT>
-      <riesgoTT>%+019.2f</riesgoTT>
+      <riesgot>%+019.2f</riesgot>
+      <riesgott>%+019.2f</riesgott>
     </step>
 
 

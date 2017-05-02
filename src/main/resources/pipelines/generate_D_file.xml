@@ -19,8 +19,8 @@ Pipeline para archivo D
           cl,
           ct,
           f,
-          riesgo_t                                       AS riesgoT,
-          riesgo_tt                                      AS riesgoTT
+          riesgo_t                                       AS riesgot,
+          riesgo_tt                                      AS riesgott
         FROM
 
           -- Construir datos de archivo:
@@ -182,8 +182,8 @@ Pipeline para archivo D
       <cl>%3s</cl>
       <ct>%-15s</ct>
       <f>%1s</f>
-      <riesgoT>%+019.2f</riesgoT>
-      <riesgoTT>%+019.2f</riesgoTT>
+      <riesgot>%+019.2f</riesgot>
+      <riesgott>%+019.2f</riesgott>
     </step>
 
     <!--Save to file-->
