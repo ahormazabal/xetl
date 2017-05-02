@@ -50,8 +50,8 @@ public class ColumnFormatter extends AbstractBaseStep
               if (record.containsKey(entry.getKey())) {
                 String format = entry.getValue();
                 String oldVal = record.get(entry.getKey());
-                Object newVal = getConvertionObject(format, oldVal);
-                record.set(entry.getKey(), String.format(Locale.US, format, newVal));
+                String newVal = formatValue(format, oldVal);
+                record.set(entry.getKey(), newVal);
               }
             });
             return record;
@@ -69,15 +69,18 @@ public class ColumnFormatter extends AbstractBaseStep
    * @param oldVal
    * @return
    */
-  private Object getConvertionObject(String format, String oldVal) {
+  private String formatValue(String format, String oldVal) {
+    if (oldVal == null)
+      return "";
+
     char convert = format.charAt(format.length() - 1);
     switch (convert) {
       case 's':
-        return oldVal == null ? "" : oldVal;
+        return String.format(Locale.US, format, oldVal);
       case 'f':
-        return new BigDecimal(oldVal);
+        return String.format(Locale.US, format, new BigDecimal(oldVal));
       case 'd':
-        return Integer.valueOf(oldVal);
+        return String.format(Locale.US, format, Integer.valueOf(oldVal));
       default:
         throw new UnsupportedOperationException("Unsupported convertion type: " + format);
     }
