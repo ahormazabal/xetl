@@ -79,7 +79,7 @@ Pipeline para archivo D
     <step type="savecsv">
       <destination>${OUTPUT_DIR}/PT${OLD_INTRADAY_ID}${DATE_SHORT}</destination>
       <delimiter>,</delimiter>
-      <write-header>false</write-header>
+      <!--<write-header>false</write-header>-->
     </step>
   </steps>
 </pipeline>

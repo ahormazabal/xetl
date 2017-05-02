@@ -62,7 +62,7 @@ Pipeline para archivo D
       <pt>%3s</pt>
       <ct>%-15s</ct>
       <f>%1s</f>
-      <valor>%-19.2f</valor>
+      <valor>%+19.2f</valor>
     </step>
 
     <!-- Save to file -->
