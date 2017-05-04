@@ -164,11 +164,11 @@ Pipeline para archivo D
     <step type="pt_cl1_LevelCorrector"/>
 
 
-    <step type="dateformat">
-      <column>fecha_proceso</column>
-      <from>yyyy/MM/dd</from>
-      <to>yyyy-MM-dd</to>
-    </step>
+    <!--<step type="dateformat">-->
+      <!--<column>fecha_proceso</column>-->
+      <!--<from>yyyy/MM/dd</from>-->
+      <!--<to>yyyy-MM-dd</to>-->
+    <!--</step>-->
 
     <step type="format">
       <tipo>%-20s</tipo>

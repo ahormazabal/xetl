@@ -64,11 +64,11 @@ Pipeline para archivo D
     <step type="pt_cl1_LevelCorrector"/>
 
 
-    <step type="dateformat">
-      <column>fecha_proyeccion</column>
-      <from>yyyy/MM/dd</from>
-      <to>yyyy-MM-dd</to>
-    </step>
+    <!--<step type="dateformat">-->
+      <!--<column>fecha_proyeccion</column>-->
+      <!--<from>yyyy/MM/dd</from>-->
+      <!--<to>yyyy-MM-dd</to>-->
+    <!--</step>-->
 
     <step type="format">
       <!--<fecha_proceso></fecha_proceso>-->

@@ -59,11 +59,11 @@ Pipeline para archivo D
     <!-- Corregir anomalia entre niveles PT y CL1 -->
     <step type="pt_cl1_LevelCorrector"/>
 
-    <step type="dateformat">
-      <column>fecha_proceso</column>
-      <from>yyyy/MM/dd</from>
-      <to>yyyy-MM-dd</to>
-    </step>
+    <!--<step type="dateformat">-->
+      <!--<column>fecha_proceso</column>-->
+      <!--<from>yyyy/MM/dd</from>-->
+      <!--<to>yyyy-MM-dd</to>-->
+    <!--</step>-->
 
     <step type="format">
       <!--<fecha_proceso></fecha_proceso>-->
