@@ -71,14 +71,14 @@ public class OperationsIFSymbolFilter extends AbstractIFSymbolFilter
   protected Issuer getIssuer(Record record) {
 
     Issuer issuer = getIssuers().get(record.get("emisor"));
-    if (issuer == null) { // Caso especial PDBC PRBC
+    if (issuer == null || "CENTRAL".equals(issuer.emisor)) { // Caso especial PDBC PRBC
       String instrumento = record.get("instrumento");
       switch (instrumento) {
         case "PDBC":
         case "PRBC":
           issuer = new Issuer();
           issuer.emisor = "CENTRAL";
-          issuer.cod_svs = instrumento;
+          issuer.cod_svs = instrumento.substring(0, 4);
           issuer.tip_ent = "B";
           break;
       }

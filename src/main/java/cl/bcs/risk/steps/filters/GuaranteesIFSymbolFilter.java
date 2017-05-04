@@ -77,7 +77,7 @@ public class GuaranteesIFSymbolFilter extends AbstractIFSymbolFilter
   protected Issuer getIssuer(Record record) {
 
     Issuer issuer = getIssuers().get(record.get("emisor"));
-    if (issuer == null) {
+    if ((issuer == null) || "CENTRAL".equals(issuer.emisor)) {
       String instrumento = record.get("instrumento");
 
       if (instrumento.startsWith("PDBC") || instrumento.startsWith("PRBC")) {
