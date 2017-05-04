@@ -12,8 +12,8 @@ Pipeline para archivo D
           get_cod_nivel(sistema, scm, cm, pt, NULL, ct, f) AS nivel,
           cm                                               AS cm,
           pt                                               AS pt,
-          ct                                               AS ct,
-          f                                                AS f,
+          --ct                                               AS ct,
+          --f                                                AS f,
           val                                              AS valor
         FROM estimacion_garantias
         WHERE id_sesion = '${SESSION_ID}'
@@ -60,14 +60,14 @@ Pipeline para archivo D
       <nivel>%-4s</nivel>
       <cm>%2s</cm>
       <pt>%3s</pt>
-      <ct>%-15s</ct>
-      <f>%1s</f>
-      <valor>%+19.2f</valor>
+      <!--<ct>%-15s</ct>-->
+      <!--<f>%1s</f>-->
+      <valor>%+019.2f</valor>
     </step>
 
     <!-- Save to file -->
     <step type="savecsv">
-      <destination>${OUTPUT_DIR}/GG${OLD_INTRADAY_ID}${DATE_SHORT}</destination>
+      <destination>${OUTPUT_DIR}/GG${DATE_SHORT}</destination>
       <delimiter>,</delimiter>
       <write-header>false</write-header>
     </step>
