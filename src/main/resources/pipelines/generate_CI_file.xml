@@ -37,9 +37,9 @@ Pipeline para archivo CI
     <step type="format">
       <!--<fecha></fecha>-->
       <nombre>%-20s</nombre>
-      <ajuste>%+019.4f</ajuste>
-      <precio_de_cierre>%+019.4f</precio_de_cierre>
-      <tir>%+019.4f</tir>
+      <ajuste>%+019.6f</ajuste>
+      <precio_de_cierre>%+019.6f</precio_de_cierre>
+      <tir>%+019.6f</tir>
       <mercado>%2s</mercado>
       <grupo>%2s</grupo>
       <familia>%-10s</familia>
