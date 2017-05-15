@@ -22,11 +22,12 @@ Pipeline para archivo D
               AND t = 3
               AND (scm IS DISTINCT FROM 'DE' OR (ct NOTNULL AND f NOTNULL))
         --         Niveles
-        --               AND (
+                      AND (
         --                 is_nivel_cclv_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
         --                 OR is_nivel_sistema_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
-        --                 OR is_nivel_scm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
-        --                 OR is_nivel_cm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                         OR is_nivel_scm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                         OR
+                is_nivel_cm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
         --                 OR is_nivel_cclv_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
         --                 OR is_nivel_sistema_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
         --                 OR is_nivel_scm_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)

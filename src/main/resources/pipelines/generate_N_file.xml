@@ -24,25 +24,26 @@ Pipeline para archivo D
               AND tipo_de_escenario = 'HISTORICO'
               AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3)
               AND sistema IS DISTINCT FROM 'CCS'
+              AND ('${OLD_INTRADAY_ID}'::int != 0 || scm NOT IN ('PH', 'SM'))
               -- Niveles
               AND (
                 is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
               )
         ORDER BY
           pt ASC NULLS FIRST,

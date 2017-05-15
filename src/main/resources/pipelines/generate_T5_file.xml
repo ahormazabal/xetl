@@ -11,7 +11,7 @@ Pipeline para archivo D
           (SELECT MAX(f.fecha)
            FROM factores f
            WHERE f.fecha &lt; '${DATE}')                 AS fecha,
-          '${INTRADAY_ID}'                               AS correlativo,
+          '05'                                           AS correlativo,
           get_cod_arbol(sistema)                         AS arbol,
           get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
           cm                                             AS cm,
@@ -29,23 +29,24 @@ Pipeline para archivo D
               AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1))
               -- Niveles
               AND (
-                is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
+               -- OR
+                   is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
-                OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
               )
         ORDER BY
           pt ASC NULLS FIRST,
@@ -65,9 +66,9 @@ Pipeline para archivo D
 
 
     <!--<step type="dateformat">-->
-      <!--<column>fecha_proyeccion</column>-->
-      <!--<from>yyyy/MM/dd</from>-->
-      <!--<to>yyyy-MM-dd</to>-->
+    <!--<column>fecha_proyeccion</column>-->
+    <!--<from>yyyy/MM/dd</from>-->
+    <!--<to>yyyy-MM-dd</to>-->
     <!--</step>-->
 
     <step type="format">

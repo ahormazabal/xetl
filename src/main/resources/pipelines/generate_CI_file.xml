@@ -43,7 +43,7 @@ Pipeline para archivo CI
       <mercado>%2s</mercado>
       <grupo>%2s</grupo>
       <familia>%-10s</familia>
-      <valorizacion>%+019.4f</valorizacion>
+      <valorizacion>%+019.6f</valorizacion>
     </step>
 
     <step type="savecsv">
