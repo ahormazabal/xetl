@@ -18,8 +18,8 @@ Pipeline para archivo D
           cl                                                      AS cl,
           ct                                                      AS ct,
           f                                                       AS f,
-          tt                                                      AS riesgot,
-          tt                                                      AS riesgott
+          CASE WHEN tt &lt; 0 THEN 0 ELSE tt END              		  AS riesgot,
+          CASE WHEN tt &lt; 0 THEN 0 ELSE tt END              	      AS riesgott
         FROM estimacion_de_riesgo
         WHERE id_sesion = '${SESSION_ID}'
               AND tipo_de_escenario = 'HISTORICO'
