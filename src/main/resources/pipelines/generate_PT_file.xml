@@ -23,7 +23,8 @@ Pipeline para archivo D
         FROM estimacion_de_riesgo
         WHERE id_sesion = '${SESSION_ID}'
               AND tipo_de_escenario = 'HISTORICO'
-              AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3)
+              AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)) -- Opcion 1, simulacion estatica
+              -- AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3) -- Opcion 2, simulacion movil
               -- Niveles
               AND (
                 is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
