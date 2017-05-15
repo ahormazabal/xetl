@@ -122,7 +122,7 @@ Pipeline para archivo D
         WHERE
           id_sesion = '${SESSION_ID}'
           AND tipo_de_escenario = 'HISTORICO'
-          AND ('${OLD_INTRADAY_ID}'::int != 0 || scm NOT IN ('PH', 'SM'))
+          AND ('${OLD_INTRADAY_ID}'::int != 0 OR scm NOT IN ('PH', 'SM'))
           AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1) OR
                is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3))
           AND (
