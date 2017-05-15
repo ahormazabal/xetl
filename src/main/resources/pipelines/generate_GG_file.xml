@@ -59,7 +59,7 @@ Pipeline para archivo D
       <!--<fecha></fecha>-->
       <nivel>%-4s</nivel>
       <cm>%2s</cm>
-      <pt>%3s</pt>
+      <pt>%03d</pt>
       <!--<ct>%-15s</ct>-->
       <!--<f>%1s</f>-->
       <valor>%+019.2f</valor>
