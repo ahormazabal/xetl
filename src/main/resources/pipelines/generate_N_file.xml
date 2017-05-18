@@ -35,6 +35,7 @@ Pipeline para archivo D
                 OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR (is_nivel_cl3(netting, sistema, scm, cm, pt, cl, ct, f) AND cl IN ('236','635','628')) -- Nivel igual a is_nivel_cm_cl
                 OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
                 OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
 --                 OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
