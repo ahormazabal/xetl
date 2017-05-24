@@ -56,7 +56,7 @@ public class ColumnFormatter extends AbstractBaseStep
 
                 //FIX para que conversiones %03d de null queden en "   " y no en "000".
                 if(oldVal == null && convertType == 'd'){
-                  newVal = newVal.replaceAll("0", " ");
+                  newVal = newVal.replaceAll(".", " ");
                 }
 
                 record.set(entry.getKey(), newVal);
