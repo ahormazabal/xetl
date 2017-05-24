@@ -48,10 +48,18 @@ public class ColumnFormatter extends AbstractBaseStep
           try {
             columnFormats.entrySet().forEach(entry -> {
               if (record.containsKey(entry.getKey())) {
+
                 String format = entry.getValue();
+                char convertType = format.charAt(format.length() - 1);
                 String oldVal = record.get(entry.getKey());
-                Object newVal = getConvertionObject(format, oldVal);
-                record.set(entry.getKey(), String.format(Locale.US, format, newVal));
+                String newVal = String.format(Locale.US, format, getConvertionObject(convertType, oldVal));
+
+                //FIX para que conversiones %03d de null queden en "   " y no en "000".
+                if(oldVal == null && convertType == 'd'){
+                  newVal = newVal.replaceAll("0", " ");
+                }
+
+                record.set(entry.getKey(), newVal);
               }
             });
             return record;
@@ -65,12 +73,11 @@ public class ColumnFormatter extends AbstractBaseStep
   /**
    * Convierte un string en el tipo de dato apropiado para la conversion.
    *
-   * @param format
+   * @param convert
    * @param oldVal
    * @return
    */
-  private Object getConvertionObject(String format, String oldVal) {
-    char convert = format.charAt(format.length() - 1);
+  private Object getConvertionObject(char convert, String oldVal) {
     switch (convert) {
       case 's':
         return oldVal == null ? "" : oldVal;
@@ -79,7 +86,7 @@ public class ColumnFormatter extends AbstractBaseStep
       case 'd':
         return oldVal == null ? 0 : Integer.valueOf(oldVal);
       default:
-        throw new UnsupportedOperationException("Unsupported convertion type: " + format);
+        throw new UnsupportedOperationException("Unsupported convertion type: %" + convert);
     }
   }
 
