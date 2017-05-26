@@ -10,7 +10,7 @@ Pipeline para archivo D
         SELECT
           get_cod_tipo(tipo_de_estimacion)               AS tipo,
           fecha                                          AS fecha_proceso,
-          '${INTRADAY_ID}'                               AS correlativo,
+          '${OLD_INTRADAY_ID}'                           AS correlativo,
           get_cod_arbol(sistema)                         AS arbol,
           get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
           cm,

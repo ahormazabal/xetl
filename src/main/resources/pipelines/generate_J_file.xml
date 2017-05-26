@@ -9,7 +9,7 @@ Pipeline para archivo D
       <origin>
         SELECT
           fecha                                          AS fecha,
-          '${INTRADAY_ID}'                               AS correlativo,
+          '${OLD_INTRADAY_ID}'                           AS correlativo,
           get_cod_arbol(sistema)                         AS arbol,
           get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
           cm                                             AS cm,
