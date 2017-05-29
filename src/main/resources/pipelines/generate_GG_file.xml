@@ -9,7 +9,8 @@ Pipeline para archivo D
       <origin>
         SELECT
           fecha                                            AS fecha,
-          get_cod_nivel(sistema, scm, cm, pt, NULL, ct, f) AS nivel,
+          --get_cod_nivel(sistema, scm, cm, pt, NULL, ct, f) AS nivel,
+          CASE WHEN is_nivel_cm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f) THEN 'PT' ELSE get_cod_nivel(sistema, scm, cm, pt, NULL, ct, f) END AS nivel,
           cm                                               AS cm,
           pt                                               AS pt,
           --ct                                               AS ct,
@@ -29,8 +30,8 @@ Pipeline para archivo D
 --                 OR is_nivel_cclv_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
 --                 OR is_nivel_sistema_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
 --                 OR is_nivel_scm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
---                 OR is_nivel_cm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
-                OR is_nivel_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+                 OR is_nivel_cm_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
+--                OR is_nivel_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
 --                 OR is_nivel_cclv_ct(NULL, sistema, scm, cm, pt, NULL, ct, f)
 --                 OR is_nivel_sistema_ct(NULL, sistema, scm, cm, pt, NULL, ct, f)
 --                 OR is_nivel_scm_ct(NULL, sistema, scm, cm, pt, NULL, ct, f)
