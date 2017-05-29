@@ -69,7 +69,7 @@ Pipeline para archivo D
 
     <step type="format">
       <!--<fecha_proceso></fecha_proceso>-->
-      <correlativo>%2s</correlativo>
+      <correlativo>%02d</correlativo>
       <arbol>%-20s</arbol>
       <nivel>%-4s</nivel>
       <cm>%2s</cm>
