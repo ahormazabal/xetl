@@ -25,12 +25,15 @@ Pipeline para archivo D
 
           -- Construir datos de archivo:
 
-          -- Si fecha__proceso = primera fecha liquidacion
+          -- Si fecha__proceso = primera fecha liquidacion y t3 no es nulo
           --    filtrar t1
           --    dejar t2y t3
-          --  si primera fecha de liquidacion es mayor que fecha proceso
+          --  si primera fecha de liquidacion es mayor que fecha proceso y t3 no es nulo
           --    dejar t1
           --    agrupar t2 y t3
+          --  si primera fecha de liquidacion es mayor que fecha proceso y t3 no es nulo
+          --
+          --    agrupar t1 y t2
           --
           -- luego filtrar registros vacio.
 
@@ -41,7 +44,7 @@ Pipeline para archivo D
              tt1                                                                      AS riesgo_tt,
              get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}' :: VARCHAR, 0) AS fecha_proyeccion
            FROM estimacion_de_riesgo
-           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}'
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}' AND get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
 
            UNION
            -- T2
@@ -51,7 +54,7 @@ Pipeline para archivo D
              tt2                                                           AS riesgo_tt,
              get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 1) AS fecha_proyeccion
            FROM estimacion_de_riesgo
-           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) = '${DATE}'
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) = '${DATE}' AND get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
 
            UNION
            -- T3
@@ -61,7 +64,7 @@ Pipeline para archivo D
              tt3                                                           AS riesgo_tt,
              get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) AS fecha_proyeccion
            FROM estimacion_de_riesgo
-           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) = '${DATE}'
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) = '${DATE}' AND get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
 
            UNION
            -- Agrupar T2 y T3
@@ -115,6 +118,59 @@ Pipeline para archivo D
            WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}'
            GROUP BY fecha, id_sesion, tipo_de_escenario, tipo_de_estimacion, netting,
              sistema, scm, cm, pt, cl, ct, f, t1, t2, t3
+             UNION
+           -- Agrupar T1 y T2
+           SELECT
+             fecha,
+             id_sesion,
+             tipo_de_escenario,
+             tipo_de_estimacion,
+             netting,
+             sistema,
+             scm,
+             cm,
+             pt,
+             cl,
+             ct,
+             f,
+             t1,
+             t2,
+             t3,
+             NULL                                                          AS tt,
+             NULL                                                          AS tt1,
+             NULL                                                          AS tt2,
+             NULL                                                          AS tt3,
+             NULL                                                          AS t_1,
+             NULL                                                          AS t_2,
+             NULL                                                          AS t_3,
+             NULL                                                          AS t_suma,
+             NULL                                                          AS tt_cvar,
+             NULL                                                          AS t_suma_cvar,
+             NULL                                                          AS escenarios_total,
+             NULL                                                          AS escenarios_t1,
+             NULL                                                          AS escenarios_t2,
+             NULL                                                          AS escenarios_t3,
+             sum(riesgo_t)                                                 AS riesgo_t,
+             sum(riesgo_tt)                                                AS riesgo_tt,
+             get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) AS fecha_proyeccion
+           FROM (SELECT
+                   *,
+                   t_1 AS riesgo_t,
+                   tt1 AS riesgo_tt
+                 FROM estimacion_de_riesgo
+
+                 UNION
+                 SELECT
+                   *,
+                   t_2 AS riesgo_t,
+                   tt2 AS riesgo_tt
+                 FROM estimacion_de_riesgo
+
+                ) AS groupdata
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}' AND get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NULL
+           GROUP BY fecha, id_sesion, tipo_de_escenario, tipo_de_estimacion, netting,
+             sistema, scm, cm, pt, cl, ct, f, t1, t2, t3
+             
 
           ) AS data
 
