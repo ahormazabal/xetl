@@ -115,7 +115,7 @@ Pipeline para archivo D
                  FROM estimacion_de_riesgo
 
                 ) AS groupdata
-           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}'
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}' AND get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
            GROUP BY fecha, id_sesion, tipo_de_escenario, tipo_de_estimacion, netting,
              sistema, scm, cm, pt, cl, ct, f, t1, t2, t3
              UNION

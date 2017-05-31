@@ -20,7 +20,7 @@ Pipeline para archivo D
               AND tipo_de_escenario = 'HISTORICO'
               AND cuenta = 'CORRIENTE'
               AND t = 3
-              AND (scm IS DISTINCT FROM 'DE' OR (ct NOTNULL AND f NOTNULL))
+              AND (scm IS DISTINCT FROM 'DE' OR (ct NOTNULL))
               --         Niveles
               AND (
                 --                 is_nivel_cclv_pt(NULL, sistema, scm, cm, pt, NULL, ct, f)
@@ -34,6 +34,7 @@ Pipeline para archivo D
                 --                 OR is_nivel_cm_cl(NULL, sistema, scm, cm, pt, NULL, ct, f)
                 --                 OR is_nivel_ct1(NULL, sistema, scm, cm, pt, NULL, ct, f)
                 --                 OR is_nivel_ct2(NULL, sistema, scm, cm, pt, NULL, ct, f)
+                                 OR is_nivel_ct3(NULL, sistema, scm, cm, pt, NULL, ct, f)
               )
         ORDER BY
           sistema ASC NULLS FIRST,
