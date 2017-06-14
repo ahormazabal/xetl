@@ -48,7 +48,7 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
 
     <!-- Replace for 0 all columns starting from column 17 (16 0-indexed) to the right. -->
     <step type="zeroToRight">
-      <fromColumn>16</fromColumn>
+      <fromColumn>14</fromColumn>
     </step>
 
     <!-- Save to file -->
