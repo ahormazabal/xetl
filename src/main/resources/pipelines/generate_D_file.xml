@@ -19,12 +19,12 @@ Pipeline para archivo D
           cl,
           ct,
           f,
-		-- OPCION (1) 
-         riesgo_t                                      AS riesgot_,
-         riesgo_t                                      AS riesgot
-		-- OPCION (2)
---          riesgo_t                                       AS riesgot,
---          riesgo_tt                                      AS riesgott
+          -- OPCION (1)
+          riesgo_t                                       AS riesgot_,
+          riesgo_t                                       AS riesgot
+        -- OPCION (2)
+        --          riesgo_t                                       AS riesgot,
+        --          riesgo_tt                                      AS riesgott
         FROM
 
           -- Construir datos de archivo:
@@ -44,43 +44,46 @@ Pipeline para archivo D
           (SELECT
              -- T1
              *,
--- OPCION (1) 
+             -- OPCION (1)
              t_1                                                                      AS riesgo_t_,
              t_1                                                                      AS riesgo_t,
--- OPCION (2) 
---             t_1                                                                      AS riesgo_t_,
---             tt1                                                                      AS riesgo_tt,
+             -- OPCION (2)
+             --             t_1                                                                      AS riesgo_t_,
+             --             tt1                                                                      AS riesgo_tt,
              get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}' :: VARCHAR, 0) AS fecha_proyeccion
            FROM estimacion_de_riesgo
-           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}' AND get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}' AND
+                 get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
 
            UNION
            -- T2
            SELECT
              *,
--- OPCION (1) 
+             -- OPCION (1)
              t_2                                                           AS riesgo_t_,
              t_2                                                           AS riesgo_t,
--- OPCION (2) 
---             t_2                                                           AS riesgo_t_,
---             tt2                                                           AS riesgo_tt,
+             -- OPCION (2)
+             --             t_2                                                           AS riesgo_t_,
+             --             tt2                                                           AS riesgo_tt,
              get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 1) AS fecha_proyeccion
            FROM estimacion_de_riesgo
-           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) = '${DATE}' AND get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) = '${DATE}' AND
+                 get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
 
            UNION
            -- T3
            SELECT
              *,
--- OPCION (1) 
+             -- OPCION (1)
              t_3                                                           AS riesgo_t_,
              t_3                                                           AS riesgo_t,
--- OPCION (2) 
---             t_3                                                           AS riesgo_t,
---             tt3                                                           AS riesgo_tt,
+             -- OPCION (2)
+             --             t_3                                                           AS riesgo_t,
+             --             tt3                                                           AS riesgo_tt,
              get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) AS fecha_proyeccion
            FROM estimacion_de_riesgo
-           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) = '${DATE}' AND get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) = '${DATE}' AND
+                 get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
 
            UNION
            -- Agrupar T2 y T3
@@ -114,39 +117,48 @@ Pipeline para archivo D
              NULL                                                          AS escenarios_t1,
              NULL                                                          AS escenarios_t2,
              NULL                                                          AS escenarios_t3,
--- OPCION (1)
+             NULL                                                          AS monto_neto_total,
+             NULL                                                          AS monto_neto_T1,
+             NULL                                                          AS monto_neto_T2,
+             NULL                                                          AS monto_neto_T3,
+             NULL                                                          AS escenarios_s_total,
+             NULL                                                          AS escenarios_s_T1,
+             NULL                                                          AS escenarios_s_T2,
+             NULL                                                          AS escenarios_s_T3,
+             -- OPCION (1)
              sum(riesgo_t_)                                                AS riesgo_t_,
              sum(riesgo_t)                                                 AS riesgo_t,
--- OPCION (2) 
---          sum(riesgo_t)                                                  AS riesgo_t
---          sum(riesgo_tt)                                                 AS riesgo_tt,
+             -- OPCION (2)
+             --          sum(riesgo_t)                                                  AS riesgo_t
+             --          sum(riesgo_tt)                                                 AS riesgo_tt,
              get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 1) AS fecha_proyeccion
            FROM (SELECT
                    *,
--- OPCION (1) 
+                   -- OPCION (1)
                    t_2 AS riesgo_t_,
-                   t_2 AS riesgo_t             
--- OPCION (2) 
---                   t_2 AS riesgo_t,
---                   tt2 AS riesgo_tt
+                   t_2 AS riesgo_t
+                 -- OPCION (2)
+                 --                   t_2 AS riesgo_t,
+                 --                   tt2 AS riesgo_tt
                  FROM estimacion_de_riesgo
 
                  UNION
                  SELECT
                    *,
--- OPCION (1) 
+                   -- OPCION (1)
                    t_3 AS riesgo_t_,
                    t_3 AS riesgo_t
--- OPCION (2) 
---                  t_3 AS riesgo_t,
---                  tt3 AS riesgo_tt
+                 -- OPCION (2)
+                 --                  t_3 AS riesgo_t,
+                 --                  tt3 AS riesgo_tt
                  FROM estimacion_de_riesgo
 
                 ) AS groupdata
-           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}' AND get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}' AND
+                 get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NOT NULL
            GROUP BY fecha, id_sesion, tipo_de_escenario, tipo_de_estimacion, netting,
              sistema, scm, cm, pt, cl, ct, f, t1, t2, t3
-             UNION
+           UNION
            -- Agrupar T1 y T2
            SELECT
              fecha,
@@ -178,39 +190,48 @@ Pipeline para archivo D
              NULL                                                          AS escenarios_t1,
              NULL                                                          AS escenarios_t2,
              NULL                                                          AS escenarios_t3,
--- OPCION (1)
+             NULL                                                          AS monto_neto_total,
+             NULL                                                          AS monto_neto_T1,
+             NULL                                                          AS monto_neto_T2,
+             NULL                                                          AS monto_neto_T3,
+             NULL                                                          AS escenarios_s_total,
+             NULL                                                          AS escenarios_s_T1,
+             NULL                                                          AS escenarios_s_T2,
+             NULL                                                          AS escenarios_s_T3,
+             -- OPCION (1)
              sum(riesgo_t_)                                                AS riesgo_t_,
              sum(riesgo_t)                                                 AS riesgo_t,
--- OPCION (2) 
---          sum(riesgo_t)                                                  AS riesgo_t
---          sum(riesgo_tt)                                                 AS riesgo_tt,
+             -- OPCION (2)
+             --          sum(riesgo_t)                                                  AS riesgo_t
+             --          sum(riesgo_tt)                                                 AS riesgo_tt,
              get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) AS fecha_proyeccion
            FROM (SELECT
                    *,
--- OPCION (1) 
+                   -- OPCION (1)
                    t_1 AS riesgo_t_,
                    t_1 AS riesgo_t
--- OPCION (2) 
---                 t_1 AS riesgo_t,
---                 tt1 AS riesgo_tt
+                 -- OPCION (2)
+                 --                 t_1 AS riesgo_t,
+                 --                 tt1 AS riesgo_tt
                  FROM estimacion_de_riesgo
 
                  UNION
                  SELECT
                    *,
--- OPCION (1) 
+                   -- OPCION (1)
                    t_2 AS riesgo_t_,
                    t_2 AS riesgo_tt
--- OPCION (2) 
---                   t_2 AS riesgo_t,
---                   tt2 AS riesgo_tt
+                 -- OPCION (2)
+                 --                   t_2 AS riesgo_t,
+                 --                   tt2 AS riesgo_tt
                  FROM estimacion_de_riesgo
 
                 ) AS groupdata
-           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}' AND get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NULL
+           WHERE get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 0) &gt; '${DATE}' AND
+                 get_fecha_liquidacion('${DATE}' :: DATE, '${INTRADAY_ID}', 2) IS NULL
            GROUP BY fecha, id_sesion, tipo_de_escenario, tipo_de_estimacion, netting,
              sistema, scm, cm, pt, cl, ct, f, t1, t2, t3
-             
+
 
           ) AS data
 
@@ -218,37 +239,38 @@ Pipeline para archivo D
         WHERE
           id_sesion = '${SESSION_ID}'
           AND tipo_de_escenario = 'HISTORICO'
-          AND ('${OLD_INTRADAY_ID}'::int != 0 OR scm NOT IN ('PH', 'SM'))
+          AND ('${OLD_INTRADAY_ID}' :: INT != 0 OR scm NOT IN ('PH', 'SM'))
           AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1) OR
                is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3))
           AND (
             is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
             OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
             OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)
             OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)
-            OR (is_nivel_cl3(netting, sistema, scm, cm, pt, cl, ct, f) AND cl IN ('236','635','628')) -- Nivel igual a is_nivel_cm_cl
---             OR is_nivel_cclv_ct(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_sistema_ct(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_scm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
---             OR is_nivel_cm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR (is_nivel_cl3(netting, sistema, scm, cm, pt, cl, ct, f) AND cl IN ('236', '635', '628'))
+            -- Nivel igual a is_nivel_cm_cl
+            --             OR is_nivel_cclv_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_sistema_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_scm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+            --             OR is_nivel_cm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
             OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
             OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
           )
--- OPCION (1) 
-AND (riesgo_t NOTNULL OR riesgo_t_ NOTNULL)
--- OPCION (2) 
--- AND (riesgo_t NOTNULL OR riesgo_tt NOTNULL)
+          -- OPCION (1)
+          AND (riesgo_t NOTNULL OR riesgo_t_ NOTNULL)
+        -- OPCION (2)
+        -- AND (riesgo_t NOTNULL OR riesgo_tt NOTNULL)
         ORDER BY
           nivel ASC,
           tipo_de_estimacion ASC,
@@ -266,9 +288,9 @@ AND (riesgo_t NOTNULL OR riesgo_t_ NOTNULL)
 
 
     <!--<step type="dateformat">-->
-      <!--<column>fecha_proceso</column>-->
-      <!--<from>yyyy/MM/dd</from>-->
-      <!--<to>yyyy-MM-dd</to>-->
+    <!--<column>fecha_proceso</column>-->
+    <!--<from>yyyy/MM/dd</from>-->
+    <!--<to>yyyy-MM-dd</to>-->
     <!--</step>-->
 
     <step type="format">
