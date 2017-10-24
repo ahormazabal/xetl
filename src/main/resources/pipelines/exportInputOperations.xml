@@ -15,29 +15,33 @@ En los tags bajo el nivel 'step', se puede usar cualquier property del sistema o
 con la forma ${property.key}, la cual sera reemplazada por su valor, si es que la variable existe.
 
 -->
-<pipeline name="loadGuarantees">
+<pipeline name="exportInputOperations">
   <steps>
 
     <!-- load records from csv-->
-    <step type="loadcsv">
-      <file>${csv_file}</file>
+    <step type="loaddb">
+      <origin>
+        SELECT *
+        FROM operaciones
+        WHERE fecha = '${DATE}'
+              AND intradiario = '${INTRADAY_ID}'
+        ORDER BY
+          camara,
+          participante,
+          cliente,
+          comitente,
+          fondo,
+          fecha_liquidacion ASC -- importante para el descuento de cobertura
+      </origin>
+    </step>
+
+    <!-- Remover columnas fecha e intradiario-->
+    <step type="removeOMG"/>
+
+    <!-- Save to file -->
+    <step type="savecsv">
+      <destination>${OPERATIONS_FILE}</destination>
       <delimiter>,</delimiter>
     </step>
-
-    <step type="omgFile">
-      <filename>${G_FILENAME}</filename>
-    </step>
-
-    <step type="dateformat">
-      <column>fecha de vencimiento</column>
-      <from>yyyy/MM/dd</from>
-      <to>yyyy-MM-dd</to>
-    </step>
-
-    <step type="batchinsert">
-      <delete_by_columns>fecha, intradiario</delete_by_columns>
-      <destination>garantias</destination>
-    </step>
-
   </steps>
 </pipeline>

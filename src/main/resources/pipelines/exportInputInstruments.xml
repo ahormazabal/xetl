@@ -15,29 +15,31 @@ En los tags bajo el nivel 'step', se puede usar cualquier property del sistema o
 con la forma ${property.key}, la cual sera reemplazada por su valor, si es que la variable existe.
 
 -->
-<pipeline name="loadGuarantees">
+<pipeline name="exportInputInstruments">
   <steps>
 
     <!-- load records from csv-->
-    <step type="loadcsv">
-      <file>${csv_file}</file>
-      <delimiter>,</delimiter>
+    <!-- cross with M file to get new values when available -->
+    <step type="loaddb">
+      <origin>
+        SELECT
+          *
+        FROM parametros p
+        WHERE p.fecha = '${DATE}'
+        ORDER BY nemo ASC
+      </origin>
     </step>
 
-    <step type="omgFile">
-      <filename>${G_FILENAME}</filename>
+    <!-- Convert decimals from . to , (postgres limitation) -->
+    <step type="fixdecimals">
+      <from>.</from>
+      <to>,</to>
     </step>
 
-    <step type="dateformat">
-      <column>fecha de vencimiento</column>
-      <from>yyyy/MM/dd</from>
-      <to>yyyy-MM-dd</to>
+    <!-- Save to file -->
+    <step type="savecsv">
+      <destination>${INSTRUMENTS_FILE}</destination>
+      <delimiter>;</delimiter>
     </step>
-
-    <step type="batchinsert">
-      <delete_by_columns>fecha, intradiario</delete_by_columns>
-      <destination>garantias</destination>
-    </step>
-
   </steps>
 </pipeline>
