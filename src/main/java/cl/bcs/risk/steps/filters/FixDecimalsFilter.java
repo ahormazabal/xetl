@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -41,8 +42,9 @@ public class FixDecimalsFilter extends AbstractBaseStep
       throw new IllegalArgumentException("decimal separators must be only one character");
     }
 
-    replaceRegex = "([0-9]+)" + from + "([0-9]+)";
+    replaceRegex = "([0-9]+)" + Pattern.quote(from) + "([0-9]+)";
     replacement = "$1" + to + "$2";
+
   }
 
   private String performReplace(String val) {
