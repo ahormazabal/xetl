@@ -15,17 +15,24 @@ En los tags bajo el nivel 'step', se puede usar cualquier property del sistema o
 con la forma ${property.key}, la cual sera reemplazada por su valor, si es que la variable existe.
 
 -->
-<pipeline name="exportInputMValuations">
+<pipeline name="exportInputGuarantees">
   <steps>
 
     <!-- load records from csv-->
     <step type="loaddb">
       <origin>
         SELECT *
-        FROM m_valorizacion_intradiario
+        FROM garantias
         WHERE fecha = '${DATE}'
         AND intradiario = '${INTRADAY_ID}'
       </origin>
+    </step>
+
+
+    <step type="dateformat">
+      <column>fecha_de_vencimiento</column>
+      <from>yyyy-MM-dd</from>
+      <to>yyyy/MM/dd</to>
     </step>
 
     <!-- Remover campos fecha e intradiario. -->
@@ -33,7 +40,7 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
 
     <!-- Save to file -->
     <step type="savecsv">
-      <destination>${M_FILE}</destination>
+      <destination>${GUARANTEES_FILE}</destination>
       <delimiter>,</delimiter>
     </step>
   </steps>
