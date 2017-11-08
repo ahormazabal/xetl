@@ -18,20 +18,30 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
 <pipeline name="extractOperations">
   <steps>
 
+
     <!-- load records from csv-->
     <step type="loaddb">
       <origin>
-        SELECT *
-        FROM operaciones
+        -- 2726
+        SELECT op.*,
+          fil.*
+        FROM operaciones op
+          LEFT OUTER JOIN filtros_operaciones fil ON fil.id_sesion = '${SESSION_ID}'
         WHERE fecha = '${DATE}'
               AND intradiario = '${INTRADAY_ID}'
+              -- Apply operations filter if apply
+              AND (fil.id_sesion ISNULL OR
+                   ((fil.filtro_camara ISNULL OR op.camara = ANY (fil.filtro_camara)) AND
+                    (fil.filtro_participante ISNULL OR op.participante = ANY (fil.filtro_participante))
+                   )
+              )
         ORDER BY
-          camara,
-          participante,
-          cliente,
-          comitente,
-          fondo,
-          fecha_liquidacion ASC -- importante para el descuento de cobertura
+          op.camara,
+          op.participante,
+          op.cliente,
+          op.comitente,
+          op.fondo,
+          op.fecha_liquidacion ASC -- importante para el descuento de cobertura
       </origin>
     </step>
 
@@ -56,3 +66,4 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     </step>
   </steps>
 </pipeline>
+
