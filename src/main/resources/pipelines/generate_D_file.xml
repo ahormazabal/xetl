@@ -266,6 +266,7 @@ Pipeline para archivo D
             --             OR is_nivel_cm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
             OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
             OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
+            OR is_nivel_ct3(netting, sistema, scm, cm, pt, cl, ct, f) --Agregar nivel ct3
           )
           -- OPCION (1)
           AND (riesgo_t NOTNULL OR riesgo_t_ NOTNULL)
