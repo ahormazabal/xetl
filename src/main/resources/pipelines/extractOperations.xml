@@ -23,8 +23,7 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     <step type="loaddb">
       <origin>
         -- 2726
-        SELECT op.*,
-          fil.*
+        SELECT op.*
         FROM operaciones op
           LEFT OUTER JOIN filtros_operaciones fil ON fil.id_sesion = '${SESSION_ID}'
         WHERE fecha = '${DATE}'
