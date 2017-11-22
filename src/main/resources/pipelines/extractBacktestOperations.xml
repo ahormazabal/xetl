@@ -21,12 +21,19 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
     <!-- load records from csv-->
     <step type="loaddb">
       <origin>
-        SELECT *
-        FROM operaciones
+        SELECT op.*
+        FROM operaciones op
+          LEFT OUTER JOIN filtros_operaciones fil ON fil.id_sesion = '${SESSION_ID}'
         WHERE fecha = (SELECT MAX(f.fecha)
                        FROM factores f
                        WHERE f.fecha &lt; '${DATE}')
               AND intradiario = '${INTRADAY_ID}'
+              -- Apply operations filter if apply
+              AND (fil.id_sesion ISNULL OR
+                   ((fil.filtro_camara ISNULL OR op.camara = ANY (fil.filtro_camara)) AND
+                    (fil.filtro_participante ISNULL OR op.participante = ANY (fil.filtro_participante))
+                   )
+              )
         ORDER BY
           camara,
           participante,
