@@ -117,23 +117,26 @@ public class MutableRecord
    * Removes element at position <i>index</i>
    *
    * @param index
+   * @return Removed value;
    */
-  public void remove(int index) {
-    valuesMap.remove(keyList.get(index));
+  public String remove(int index) {
+    String val = valuesMap.remove(keyList.get(index));
     keyList.remove(index);
+    return val;
   }
 
   /**
    * Removes element represented by <i>key</i>.
    *
    * @param key
+   * @return Removed value;
    */
-  public void remove(String key) {
+  public String remove(String key) {
     if (!valuesMap.containsKey(key))
       throw new NoSuchElementException(key);
 
     keyList.remove(key);
-    valuesMap.remove(key);
+    return valuesMap.remove(key);
   }
 
 

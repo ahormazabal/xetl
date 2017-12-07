@@ -1,0 +1,92 @@
+<!--
+Pipeline para archivo D
+-->
+<pipeline name="generate_FD_file">
+  <steps>
+
+    <!-- load records from csv-->
+    <step type="loaddb">
+      <origin>
+        SELECT
+          fecha                                          AS fecha_proceso,
+          get_cod_nivel(sistema, scm, cm, pt, cl, ct, f) AS nivel,
+          cm                                             AS cm,
+          pt                                             AS pt,
+          cl                                             AS cl,
+          ct                                             AS ct,
+          f                                              AS f,
+-- OPCION (1) 
+		  CASE WHEN tt &lt; 0 THEN 0 ELSE tt END			AS riesgott,
+		  CASE WHEN t_suma &lt; 0 THEN 0 ELSE t_suma END	AS riesgot
+-- OPCION (2) 
+--          CASE WHEN tt &lt; 0 THEN 0 ELSE tt END          AS riesgot,
+--          CASE WHEN tt &lt; 0 THEN 0 ELSE tt END          AS riesgott
+        FROM estimacion_de_riesgo
+        WHERE id_sesion = '${SESSION_ID}'
+              AND tipo_de_escenario = 'CRISIS'
+              AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3)
+              -- Niveles
+              AND (
+                is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_sistema(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_scm(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cm(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cclv_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_sistema_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_scm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cm_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)  -- SE QUDA
+--                 OR is_nivel_cclv_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_sistema_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_scm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cm_cl(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)  -- QUEDA
+                OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)  -- QUEDA
+                OR is_nivel_cclv_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_sistema_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_scm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+--                 OR is_nivel_cm_ct(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_ct1(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_ct2(netting, sistema, scm, cm, pt, cl, ct, f)
+              )
+        ORDER BY
+          pt ASC NULLS FIRST,
+          cl ASC NULLS FIRST,
+          ct ASC NULLS FIRST,
+          f ASC NULLS FIRST,
+          cm ASC NULLS FIRST,
+          scm ASC NULLS FIRST,
+          sistema ASC NULLS FIRST,
+          tipo_de_estimacion ASC
+      </origin>
+    </step>
+
+    <!-- Corregir anomalia entre niveles PT y CL1 -->
+    <step type="pt_cl1_LevelCorrector"/>
+
+    <!--<step type="dateformat">-->
+      <!--<column>fecha_proceso</column>-->
+      <!--<from>yyyy/MM/dd</from>-->
+      <!--<to>yyyy-MM-dd</to>-->
+    <!--</step>-->
+
+    <step type="format">
+      <!--<fecha_proceso></fecha_proceso>-->
+      <nivel>%-4s</nivel>
+      <cm>%2s</cm>
+      <pt>%03d</pt>
+      <cl>%03d</cl>
+      <ct>%-15s</ct>
+      <f>%1s</f>
+      <riesgott>%+019.2f</riesgott>
+      <riesgot>%+019.2f</riesgot>
+    </step>
+
+    <!-- Save to file -->
+    <step type="savecsv">
+      <destination>${OUTPUT_DIR}/FD${DATE_SHORT}</destination>
+      <delimiter>,</delimiter>
+      <write-header>false</write-header>
+    </step>
+  </steps>
+</pipeline>

@@ -39,7 +39,7 @@ public final class StepRegister {
     register.put("gCoverageDiscountFilter", GCoverageDiscountFilter.class);
     register.put("pt_cl1_LevelCorrector", PT_CL1_LevelCorrector.class);
     register.put("format", ColumnFormatter.class);
-
+    register.put("fdFileProcessor", FDFileProcessor.class);
 
     // Register Finalizers
     register.put("savedb", SaveDB.class);
