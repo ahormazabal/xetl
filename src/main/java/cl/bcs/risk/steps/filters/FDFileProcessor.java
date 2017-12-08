@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Como las condiciones del nivel PT y el nivel CL1 son equivalentes, esto causa que al extraer ambos
- * niveles via query SQL se pierda el nivel CL1.
+ * Filtro para generacion de la columna "riesgott" del archivo FD.
  *
- * Este filtro implementa las correcciones necesarias para duplicar los registros nivel PT y agregarlos
- * al stream con nivel CL, ademas de hacer algunos ajustes de datos.
+ * Este filtro hace un preproceso de los datos cargados y determina el escenario que contiene
+ * los dos valores mas altos para todos los registros de una camara.
  *
- * En pocas palabras, por cada registro de nivel 'PT' se agregara un segundo registro de nivel 'CL' equivalente.
+ * Luego reemplaza en cada registro el evalue correspondiente a ese escenario de acuerdo
+ * al formato del archivo FD.
  *
  * @author Alberto Hormazabal Cespedes
  * @author exaTech Ingenieria SpA. (info@exatech.cl)

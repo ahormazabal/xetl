@@ -15,9 +15,10 @@ Pipeline para archivo D
           cl                                             AS cl,
           ct                                             AS ct,
           f                                              AS f,
-          --           CASE WHEN tt &lt; 0 THEN 0 ELSE tt END			AS riesgott,
+          --  A generar por fdFileProcessor              AS riesgott,
           CASE WHEN t_suma &lt; 0 THEN 0
           ELSE t_suma END                                AS riesgot,
+          -- escenarios seran removidos por fdFileProcessor
           escenarios_total :: VARCHAR                    AS escenarios_total
         FROM estimacion_de_riesgo
         WHERE id_sesion = '${SESSION_ID}'
@@ -25,9 +26,9 @@ Pipeline para archivo D
               AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3)
               -- Niveles
               AND (
-                is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)  -- SE QUDA
-                OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)  -- QUEDA
-                OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)  -- QUEDA
+                is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cl1(netting, sistema, scm, cm, pt, cl, ct, f)
+                OR is_nivel_cl2(netting, sistema, scm, cm, pt, cl, ct, f)
               )
         ORDER BY
           nivel ASC,
