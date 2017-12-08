@@ -63,6 +63,7 @@ public class MutableRecord
    *
    * @param index The index to replace
    * @param value The new value
+   * @return this same record.
    * @throws IndexOutOfBoundsException if index >= size()
    */
   public MutableRecord set(int index, String value) {
@@ -75,6 +76,7 @@ public class MutableRecord
    *
    * @param key Key to which replace its value.
    * @param value The new value to replace.
+   * @return this same record.
    * @throws NoSuchElementException if 'key' is not mapped in this record.
    */
   public MutableRecord set(String key, String value) {
@@ -89,6 +91,7 @@ public class MutableRecord
    *
    * @param key The new key to map.
    * @param value The new value
+   * @return this same record.
    * @throws IllegalArgumentException if key is already mapped.
    */
   public MutableRecord append(String key, String value) {
@@ -106,6 +109,7 @@ public class MutableRecord
    * @param index The index at which to insert the value.
    * @param key The new key to map
    * @param value The initial value.
+   * @return this same record.
    * @throws IllegalArgumentException If key is already mapped in this record.
    */
   public MutableRecord insert(int index, String key, String value) {

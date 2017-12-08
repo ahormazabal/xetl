@@ -54,24 +54,21 @@ public class FDFileProcessor extends AbstractBaseStep
   public Stream<? extends Record> filter(Stream<? extends Record> recordStream) {
     LOG.info("Processing FD File Data.");
 
+    // Agrupar data previo a proceso.
     Map<String, List<Entry>> workGroups = recordStream
         .map(Record::mutable)
-
-        // Obtener escenarios
         .map(Entry::new)
-
-        // Agrupar
         .collect(Collectors.groupingBy(Entry::groupKey));
 
-    // Determinar Escenario mas grande
 
+    // Generar salida
     return workGroups.entrySet().stream()
-        .flatMap(entry -> {
-          String key = entry.getKey();
-          List<Entry> entries = entry.getValue();
+        .flatMap(mapEntry -> {
+          List<Entry> entries = mapEntry.getValue();
           int size = entries.isEmpty() ? 0 : entries.get(0).length();
-          LOG.info("Processing group: " + key + " size " + size);
 
+          // Determinar Escenario mas grande
+          LOG.info("Processing group: " + mapEntry.getKey() + " size " + size);
           int maxIdx = Integer.MIN_VALUE;
           double maxValue = Double.MIN_VALUE;
 
@@ -85,14 +82,11 @@ public class FDFileProcessor extends AbstractBaseStep
 
           final int maxIndex = maxIdx;
 
-          // Convertir y desagrupar.
-          return entries.stream()
-              .map(entry1 -> {
-                MutableRecord record = entry1.record;
-                // Setear resultado en registros
-                record.insert(RIESGO_TT_INDEX, RIESGO_TT_KEY, String.valueOf(entry1.evalues()[maxIndex]));
-                return record;
-              });
+          // Desagrupar datos y generar registros finales.
+          return entries
+              .stream()
+              .map(e -> e.record
+                  .insert(RIESGO_TT_INDEX, RIESGO_TT_KEY, String.valueOf(e.evalues()[maxIndex])));
         })
         ;
   }
@@ -165,6 +159,7 @@ public class FDFileProcessor extends AbstractBaseStep
       if (eval_array == null) {
         // Parse values.
         try {
+          // Parseamos evalues y eliminamos data del record.
           this.eval_array = JSON.readValue(this.record.remove(SCENARIOS_FIELD), Double[].class);
         } catch (Exception e) {
           throw new RuntimeException(e.getMessage(), e);
