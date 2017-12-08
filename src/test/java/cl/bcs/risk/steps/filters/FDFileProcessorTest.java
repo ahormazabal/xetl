@@ -27,7 +27,7 @@ public class FDFileProcessorTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(FDFileProcessorTest.class);
 
-  private static final double PRECISION           = 0.000001;
+  private static final double PRECISION           = 0.00000000001;
   private static final String DATA_FILE           = "/FD_Generation_Test_Data.csv";
   private static final char   DATA_FILE_DELIMITER = ';';
 
@@ -64,8 +64,8 @@ public class FDFileProcessorTest {
 
     double result = FDFileProcessor.scenarioValue(0,
         DoubleStream.of(evalues)
-        .mapToObj(e -> new FDFileProcessor.Entry("PT", "RV", new Double[]{e}))
-        .collect(Collectors.toList()));
+            .mapToObj(e -> new FDFileProcessor.Entry("PT", "RV", new Double[]{e}))
+            .collect(Collectors.toList()));
 
     Assert.assertEquals(991702300.89, result, PRECISION);
   }
@@ -110,25 +110,24 @@ public class FDFileProcessorTest {
         .collect(Collectors.toMap(r -> r.get(PT_FIELD), r -> Double.valueOf(r.get(RIESGO_TT_KEY))));
 
     // Test Results
-    final double precision = 0.00001;
-    Assert.assertEquals(11150269.84, results.get("20"), precision);
-    Assert.assertEquals(-41229362.36, results.get("35"), precision);
-    Assert.assertEquals(13437693.32, results.get("43"), precision);
-    Assert.assertEquals(-1545426.05, results.get("48"), precision);
-    Assert.assertEquals(-7719568.46, results.get("51"), precision);
-    Assert.assertEquals(-157491887.38, results.get("54"), precision);
-    Assert.assertEquals(120875191.48, results.get("58"), precision);
-    Assert.assertEquals(-1548210.43, results.get("59"), precision);
-    Assert.assertEquals(-21653137.83, results.get("62"), precision);
-    Assert.assertEquals(57499793.62, results.get("66"), precision);
-    Assert.assertEquals(-7936886.75, results.get("69"), precision);
-    Assert.assertEquals(-10261466.48, results.get("70"), precision);
-    Assert.assertEquals(-67018668.52, results.get("82"), precision);
-    Assert.assertEquals(-372192503.80, results.get("85"), precision);
-    Assert.assertEquals(-3940406892.05, results.get("86"), precision);
-    Assert.assertEquals(4414295064.41, results.get("88"), precision);
-    Assert.assertEquals(7675977.56, results.get("90"), precision);
-    Assert.assertEquals(4070019.86, results.get("293"), precision);
+    Assert.assertEquals(11150269.84, results.get("20"), PRECISION);
+    Assert.assertEquals(-41229362.36, results.get("35"), PRECISION);
+    Assert.assertEquals(13437693.32, results.get("43"), PRECISION);
+    Assert.assertEquals(-1545426.05, results.get("48"), PRECISION);
+    Assert.assertEquals(-7719568.46, results.get("51"), PRECISION);
+    Assert.assertEquals(-157491887.38, results.get("54"), PRECISION);
+    Assert.assertEquals(120875191.48, results.get("58"), PRECISION);
+    Assert.assertEquals(-1548210.43, results.get("59"), PRECISION);
+    Assert.assertEquals(-21653137.83, results.get("62"), PRECISION);
+    Assert.assertEquals(57499793.62, results.get("66"), PRECISION);
+    Assert.assertEquals(-7936886.75, results.get("69"), PRECISION);
+    Assert.assertEquals(-10261466.48, results.get("70"), PRECISION);
+    Assert.assertEquals(-67018668.52, results.get("82"), PRECISION);
+    Assert.assertEquals(-372192503.80, results.get("85"), PRECISION);
+    Assert.assertEquals(-3940406892.05, results.get("86"), PRECISION);
+    Assert.assertEquals(4414295064.41, results.get("88"), PRECISION);
+    Assert.assertEquals(7675977.56, results.get("90"), PRECISION);
+    Assert.assertEquals(4070019.86, results.get("293"), PRECISION);
 
   }
 

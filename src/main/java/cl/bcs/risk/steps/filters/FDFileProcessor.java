@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -156,16 +157,20 @@ public class FDFileProcessor extends AbstractBaseStep
     }
 
     Double[] evalues() {
-      if (eval_array == null) {
+      if (eval_array != null) {
+        return eval_array;
+      } else {
         // Parse values.
         try {
           // Parseamos evalues y eliminamos data del record.
-          this.eval_array = JSON.readValue(this.record.remove(SCENARIOS_FIELD), Double[].class);
+          this.eval_array = Optional
+              .ofNullable(JSON.readValue(this.record.remove(SCENARIOS_FIELD), Double[].class))
+              .orElse(new Double[0]);
         } catch (Exception e) {
           throw new RuntimeException(e.getMessage(), e);
         }
       }
-      return eval_array != null ? eval_array : new Double[0];
+      return eval_array;
     }
   }
 
