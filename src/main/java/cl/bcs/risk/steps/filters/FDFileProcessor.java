@@ -5,12 +5,12 @@ import cl.bcs.risk.pipeline.FilterStep;
 import cl.bcs.risk.pipeline.Pipeline;
 import cl.bcs.risk.pipeline.Record;
 import cl.bcs.risk.utils.MutableRecord;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,13 +32,12 @@ public class FDFileProcessor extends AbstractBaseStep
   private static final Logger       LOG  = LoggerFactory.getLogger(FDFileProcessor.class);
   private static final ObjectMapper JSON = new ObjectMapper();
 
-  private static final String LEVEL_FIELD     = "nivel";
-  private static final String CM_FIELD        = "cm";
-  private static final String PT_FIELD        = "pt";
-  private static final String CL_FIELD        = "cl";
-  private static final String SCENARIOS_FIELD = "escenarios_total";
+  static final         String LEVEL_FIELD     = "nivel";
+  static final         String CM_FIELD        = "cm";
+  static final         String PT_FIELD        = "pt";
+  static final         String SCENARIOS_FIELD = "escenarios_total";
+  static final         String RIESGO_TT_KEY   = "riesgott";
   private static final int    RIESGO_TT_INDEX = 7;
-  private static final String RIESGO_TT_KEY   = "riesgott";
 
 
   @Override
@@ -106,7 +105,7 @@ public class FDFileProcessor extends AbstractBaseStep
    * @param entries Evalues.
    * @return
    */
-  private static double scenarioValue(int scenarioIndex, List<Entry> entries) {
+  static double scenarioValue(int scenarioIndex, List<Entry> entries) {
 
     if (entries.size() == 0) {
       return 0;
@@ -133,12 +132,11 @@ public class FDFileProcessor extends AbstractBaseStep
   /**
    * Registo decodificado.
    */
-  private static class Entry {
+  static class Entry {
     private MutableRecord record;
     private String        nivel;
     private String        camara;
     private String        pt;
-    private String        cl;
     private transient Double[] eval_array = null;
 
     Entry(MutableRecord r) {
@@ -147,8 +145,12 @@ public class FDFileProcessor extends AbstractBaseStep
       this.nivel = r.get(LEVEL_FIELD);
       this.camara = r.get(CM_FIELD);
       this.pt = r.get(PT_FIELD);
-      this.cl = r.get(CL_FIELD);
+    }
 
+    Entry(String nivel, String camara, Double[] eval_array) {
+      this.nivel = nivel;
+      this.camara = camara;
+      this.eval_array = eval_array;
     }
 
     String groupKey() {

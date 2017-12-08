@@ -65,8 +65,9 @@ public class MutableRecord
    * @param value The new value
    * @throws IndexOutOfBoundsException if index >= size()
    */
-  public void set(int index, String value) {
+  public MutableRecord set(int index, String value) {
     valuesMap.put(keyList.get(index), value);
+    return this;
   }
 
   /**
@@ -76,10 +77,11 @@ public class MutableRecord
    * @param value The new value to replace.
    * @throws NoSuchElementException if 'key' is not mapped in this record.
    */
-  public void set(String key, String value) {
+  public MutableRecord set(String key, String value) {
     if (!valuesMap.containsKey(key))
       throw new NoSuchElementException(key);
     valuesMap.put(key, value);
+    return this;
   }
 
   /**
@@ -89,12 +91,13 @@ public class MutableRecord
    * @param value The new value
    * @throws IllegalArgumentException if key is already mapped.
    */
-  public void append(String key, String value) {
+  public MutableRecord append(String key, String value) {
     if (valuesMap.containsKey(key)) {
       throw new IllegalArgumentException("key already exists. use set()");
     }
     keyList.add(key);
     valuesMap.put(key, value);
+    return this;
   }
 
   /**
@@ -105,12 +108,13 @@ public class MutableRecord
    * @param value The initial value.
    * @throws IllegalArgumentException If key is already mapped in this record.
    */
-  public void insert(int index, String key, String value) {
+  public MutableRecord insert(int index, String key, String value) {
     if (valuesMap.containsKey(key)) {
       throw new IllegalArgumentException("key already exists. use set()");
     }
     keyList.add(index, key);
     valuesMap.put(key, value);
+    return this;
   }
 
   /**
