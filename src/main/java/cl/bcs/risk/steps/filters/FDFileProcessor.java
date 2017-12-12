@@ -87,7 +87,11 @@ public class FDFileProcessor extends AbstractBaseStep
           return entries
               .stream()
               .map(e -> e.record
-                  .insert(RIESGO_TT_INDEX, RIESGO_TT_KEY, String.valueOf(e.evalues()[maxIndex])));
+                  .insert(RIESGO_TT_INDEX, RIESGO_TT_KEY, Optional.of(maxIndex)
+                      .filter(integer -> integer >= 0)
+                      .map(index -> String.valueOf(e.evalues()[index]))
+                      .orElse("0"))
+          );
         })
         ;
   }
