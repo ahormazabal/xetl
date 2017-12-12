@@ -13,8 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.*;
@@ -138,8 +136,6 @@ public class FDFileProcessorTest {
             Collectors.toMap(r -> r.get(PT_FIELD), r -> Double.valueOf(r.get(RIESGO_TT_KEY)))
             ));
 
-//    Map<String, Double> results = testStream
-//        .collect(Collectors.toMap(r -> r.get(PT_FIELD), r -> Double.valueOf(r.get(RIESGO_TT_KEY))));
 
     // Test Results
     LOG.info("Batch 1: Testing numeric results.");
