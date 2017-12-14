@@ -100,7 +100,7 @@ public class FDFileProcessorTest {
               .append("cl", "")
               .append("ct", "")
               .append("f", "")
-              .append("riesgot", "")
+//              .append("riesgot", "")
               .append(SCENARIOS_FIELD, evaluesString);
         });
 
@@ -113,7 +113,7 @@ public class FDFileProcessorTest {
         .append("cl", "")
         .append("ct", "")
         .append("f", "")
-        .append("riesgot", "")
+//        .append("riesgot", "")
         .append(SCENARIOS_FIELD, "[]");
     Stream<Record> emptyData = Stream.of(
         new MutableRecord(emptyTemplate).set(PT_FIELD, "35"),

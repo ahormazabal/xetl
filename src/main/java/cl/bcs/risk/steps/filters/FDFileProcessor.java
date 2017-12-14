@@ -38,6 +38,7 @@ public class FDFileProcessor extends AbstractBaseStep
   static final         String PT_FIELD        = "pt";
   static final         String SCENARIOS_FIELD = "escenarios_total";
   static final         String RIESGO_TT_KEY   = "riesgott";
+  static final         String RIESGO_T_KEY    = "riesgot";
   private static final int    RIESGO_TT_INDEX = 7;
 
 
@@ -86,10 +87,13 @@ public class FDFileProcessor extends AbstractBaseStep
           // Desagrupar datos y generar registros finales.
           return entries
               .stream()
-              .map(e -> e.record.insert(RIESGO_TT_INDEX, RIESGO_TT_KEY, Optional.of(maxIndex)
-                  .filter(integer -> integer >= 0)
-                  .map(index -> String.valueOf(e.evalues()[index]))
-                  .orElse("0"))
+              .map(e -> {
+                    String value = maxIndex < 0 ? "0" :
+                        String.valueOf(e.evalues()[maxIndex]);
+                    return e.record
+                        .append(RIESGO_TT_KEY, value)
+                        .append(RIESGO_T_KEY, value);
+                  }
               );
         })
         ;

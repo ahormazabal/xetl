@@ -16,8 +16,8 @@ Pipeline para archivo D
           ct                                             AS ct,
           f                                              AS f,
           --  A generar por fdFileProcessor              AS riesgott,
-          CASE WHEN t_suma &lt; 0 THEN 0
-          ELSE t_suma END                                AS riesgot,
+--           CASE WHEN t_suma &lt; 0 THEN 0
+--           ELSE t_suma END                                AS riesgot,
           -- escenarios seran removidos por fdFileProcessor
           escenarios_total :: VARCHAR                    AS escenarios_total
         FROM estimacion_de_riesgo
