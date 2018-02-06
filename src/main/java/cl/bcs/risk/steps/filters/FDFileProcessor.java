@@ -88,8 +88,9 @@ public class FDFileProcessor extends AbstractBaseStep
           return entries
               .stream()
               .map(e -> {
-                    String value = maxIndex < 0 ? "0" :
-                        String.valueOf(e.evalues()[maxIndex]);
+                    // String value = maxIndex < 0 ? "0" : String.valueOf(e.evalues()[maxIndex]);
+                    Double val = maxIndex < 0 ? 0 : e.evalues()[maxIndex];
+                    String value = val > 0 ? String.valueOf(val) : "0";
                     return e.record
                         .append(RIESGO_TT_KEY, value)
                         .append(RIESGO_T_KEY, value);

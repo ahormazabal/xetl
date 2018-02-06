@@ -134,27 +134,43 @@ public class FDFileProcessorTest {
     Map<String, Map<String, Double>> results = testStream
         .collect(Collectors.groupingBy(r -> r.get(LEVEL_FIELD) + "-" + r.get(CM_FIELD),
             Collectors.toMap(r -> r.get(PT_FIELD), r -> Double.valueOf(r.get(RIESGO_TT_KEY)))
-            ));
+        ));
 
 
     // Test Results
     LOG.info("Batch 1: Testing numeric results.");
     Map<String, Double> batch1Results = results.get("PT-RV");
+
+    // Los resultados negativos ahora se cambian a 0, por ende estos checks no pasan.
+    //Assert.assertEquals(-41229362.36, batch1Results.get("35"), PRECISION);
+    //Assert.assertEquals(-1545426.05, batch1Results.get("48"), PRECISION);
+    //Assert.assertEquals(-7719568.46, batch1Results.get("51"), PRECISION);
+    //Assert.assertEquals(-157491887.38, batch1Results.get("54"), PRECISION);
+    //Assert.assertEquals(-1548210.43, batch1Results.get("59"), PRECISION);
+    //Assert.assertEquals(-21653137.83, batch1Results.get("62"), PRECISION);
+    //Assert.assertEquals(-7936886.75, batch1Results.get("69"), PRECISION);
+    //Assert.assertEquals(-10261466.48, batch1Results.get("70"), PRECISION);
+    //Assert.assertEquals(-67018668.52, batch1Results.get("82"), PRECISION);
+    //Assert.assertEquals(-372192503.80, batch1Results.get("85"), PRECISION);
+    //Assert.assertEquals(-3940406892.05, batch1Results.get("86"), PRECISION);
+
+    // Checks de valor = 0
+    Assert.assertEquals(0, batch1Results.get("35"), PRECISION);
+    Assert.assertEquals(0, batch1Results.get("48"), PRECISION);
+    Assert.assertEquals(0, batch1Results.get("51"), PRECISION);
+    Assert.assertEquals(0, batch1Results.get("54"), PRECISION);
+    Assert.assertEquals(0, batch1Results.get("59"), PRECISION);
+    Assert.assertEquals(0, batch1Results.get("62"), PRECISION);
+    Assert.assertEquals(0, batch1Results.get("69"), PRECISION);
+    Assert.assertEquals(0, batch1Results.get("70"), PRECISION);
+    Assert.assertEquals(0, batch1Results.get("82"), PRECISION);
+    Assert.assertEquals(0, batch1Results.get("85"), PRECISION);
+    Assert.assertEquals(0, batch1Results.get("86"), PRECISION);
+
     Assert.assertEquals(11150269.84, batch1Results.get("20"), PRECISION);
-    Assert.assertEquals(-41229362.36, batch1Results.get("35"), PRECISION);
     Assert.assertEquals(13437693.32, batch1Results.get("43"), PRECISION);
-    Assert.assertEquals(-1545426.05, batch1Results.get("48"), PRECISION);
-    Assert.assertEquals(-7719568.46, batch1Results.get("51"), PRECISION);
-    Assert.assertEquals(-157491887.38, batch1Results.get("54"), PRECISION);
     Assert.assertEquals(120875191.48, batch1Results.get("58"), PRECISION);
-    Assert.assertEquals(-1548210.43, batch1Results.get("59"), PRECISION);
-    Assert.assertEquals(-21653137.83, batch1Results.get("62"), PRECISION);
     Assert.assertEquals(57499793.62, batch1Results.get("66"), PRECISION);
-    Assert.assertEquals(-7936886.75, batch1Results.get("69"), PRECISION);
-    Assert.assertEquals(-10261466.48, batch1Results.get("70"), PRECISION);
-    Assert.assertEquals(-67018668.52, batch1Results.get("82"), PRECISION);
-    Assert.assertEquals(-372192503.80, batch1Results.get("85"), PRECISION);
-    Assert.assertEquals(-3940406892.05, batch1Results.get("86"), PRECISION);
     Assert.assertEquals(4414295064.41, batch1Results.get("88"), PRECISION);
     Assert.assertEquals(7675977.56, batch1Results.get("90"), PRECISION);
     Assert.assertEquals(4070019.86, batch1Results.get("293"), PRECISION);
@@ -168,7 +184,7 @@ public class FDFileProcessorTest {
     Assert.assertEquals(0.0, batch2Results.get("92"), 0);
     Assert.assertEquals(0.0, batch2Results.get("70"), 0);
     Assert.assertEquals(0.0, batch2Results.get("72"), 0);
-    Assert.assertEquals(0.0, batch2Results.get("236"),0);
+    Assert.assertEquals(0.0, batch2Results.get("236"), 0);
 
   }
 
