@@ -22,8 +22,10 @@ Pipeline para archivo D
           escenarios_total :: VARCHAR                    AS escenarios_total
         FROM estimacion_de_riesgo
         WHERE id_sesion = '${SESSION_ID}'
-              AND tipo_de_escenario = 'CRISIS'
-              AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3)
+              AND tipo_de_escenario = 'CRISIS' AND
+                CASE WHEN cm='DE' THEN (is_estatico(tipo_de_estimacion,t1,t2,t3,10))
+                ELSE is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3) END
+              --AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3)
               -- Niveles
               AND (
                 is_nivel_pt(netting, sistema, scm, cm, pt, cl, ct, f)

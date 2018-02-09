@@ -19,16 +19,22 @@ Pipeline para archivo D
           ct                                                      AS ct,
           f                                                       AS f,
 -- OPCION (1) 
-		  CASE WHEN tt &lt; 0 THEN 0 ELSE tt END              	  AS riesgott,
-		  CASE WHEN t_suma &lt; 0 THEN 0 ELSE t_suma END          AS riesgot
+--		  CASE WHEN tt &lt; 0 THEN 0 ELSE tt END              	  AS riesgott,
+--		  CASE WHEN t_suma &lt; 0 THEN 0 ELSE t_suma END          AS riesgot
 -- OPCION (2) 
 --          CASE WHEN tt &lt; 0 THEN 0 ELSE tt END                            AS riesgot,
 --          CASE WHEN tt &lt; 0 THEN 0 ELSE tt END                         AS riesgott
+-- OPCION (3)
+          CASE WHEN t_suma &lt; 0 THEN 0 ELSE t_suma END           AS riesgot,
+          CASE WHEN tt &lt; 0 THEN 0 ELSE tt END                                AS riesgott
         FROM estimacion_de_riesgo
         WHERE id_sesion = '${SESSION_ID}'
               AND tipo_de_escenario = 'HISTORICO'
               --AND (is_estatico(tipo_de_estimacion, t1, t2, t3, 1)) -- Opcion 1, simulacion estatica
-               AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3) -- Opcion 2, simulacion movil
+              AND CASE WHEN cm='RV' THEN is_estatico(tipo_de_estimacion, t1, t2, t3, 3)  -- Opcion 1, simulacion estatica
+              ELSE CASE WHEN cm IN('PM','DE') THEN is_estatico(tipo_de_estimacion, t1, t2, t3, 2)
+              ELSE CASE WHEN cm IN('PH','SM') THEN is_estatico(tipo_de_estimacion, t1, t2, t3, 1) END END END
+                --AND is_movil('${SESSION_NAME}', tipo_de_escenario, tipo_de_estimacion, scm, t1, t2, t3) -- Opcion 2, simulacion movil
               -- Niveles
               AND (
                 is_nivel_cclv(netting, sistema, scm, cm, pt, cl, ct, f)
