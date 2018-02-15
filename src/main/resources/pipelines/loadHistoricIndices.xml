@@ -29,11 +29,11 @@ con la forma ${property.key}, la cual sera reemplazada por su valor, si es que l
       <to>.</to>
     </step>
 
-    <step type="dateformat">
+    <!--<step type="dateformat">
       <column>fecha</column>
       <from>dd-MM-yyyy</from>
       <to>yyyy-MM-dd</to>
-    </step>
+    </step>-->
 
     <!-- Save to database -->
     <!--<step type="savedb">-->
