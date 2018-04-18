@@ -11,12 +11,14 @@ Pipeline para archivo CI
           p.fecha        AS fecha,
           p.nemo         AS nombre,
           0              AS ajuste,
-          p.valorizacion AS valorizacion,
+          --p.valorizacion AS valorizacion,
+          s.valor_base   AS valorizacion,
           0              AS tir,
           p.mercado      AS mercado,
           p.grupo        AS grupo,
           p.familia      AS familia,
-          s.valor_base   AS precio_de_cierre          
+          --s.valor_base   AS precio_de_cierre
+          p.valorizacion   AS precio_de_cierre
         FROM parametros p
           LEFT OUTER JOIN sesion_de_mercado s
             ON p.fecha = '${DATE}'
