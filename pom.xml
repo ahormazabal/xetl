@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>cl.bcs.risk</groupId>
-  <artifactId>risk-etl</artifactId>
+  <groupId>cl.exatech.tools</groupId>
+  <artifactId>xetl</artifactId>
   <version>1.0-SNAPSHOT</version>
 
 
@@ -92,7 +92,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>cl.bcs.risk.RiskEtl</mainClass>
+              <mainClass>cl.exatech.tools.etl.RiskEtl</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
