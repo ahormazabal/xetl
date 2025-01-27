@@ -1,0 +1,47 @@
+<!--
+Archivo de definicion de un pileline.
+Este archivo define una linea de conversion de datos desde un origen a un destino
+
+Un "pipeline" define una serie de "steps" que transforman la data desde un input a un output.
+
+El primer elemento del pipeline debe implementar BeginStep.
+Los elementos centrales deben implementar FilterStep.
+El ultimo elemento debe implementar FinalStep.
+
+Todos los tags bajo el nivel 'step' seran convertidos a java properties, en forma de llave=valor.
+
+En los tags bajo el nivel 'step', se puede usar cualquier property del sistema o variable de entorno,
+con la forma ${property.key}, la cual sera reemplazada por su valor, si es que la variable existe.
+
+-->
+<pipeline name="loadHistoricIndices">
+  <steps>
+
+    <!-- load records from csv-->
+    <step type="loadcsv">
+      <file>${csv_file}</file>
+      <delimiter>;</delimiter>
+    </step>
+
+    <!-- Convert decimals from , to . (postgres limitation) -->
+    <step type="fixdecimals">
+      <from>,</from>
+      <to>.</to>
+    </step>
+
+    <!--<step type="dateformat">
+      <column>fecha</column>
+      <from>dd-MM-yyyy</from>
+      <to>yyyy-MM-dd</to>
+    </step>-->
+
+    <!-- Save to database -->
+    <!--<step type="savedb">-->
+    <step type="batchinsert">
+    <!--<datasource>default</datasource>--> <!-- this is the default -->
+      <delete_by_columns>fecha</delete_by_columns>
+      <destination>factores</destination>
+    </step>
+
+  </steps>
+</pipeline>
